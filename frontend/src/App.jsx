@@ -1,36 +1,39 @@
-import React, { useState } from 'react';
-import ReportForm from './pages/ReportForm';
-import MapView from './pages/MapView';
-import ReportList from './components/ReportList';
-import './App.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import CitizenLayout from './layouts/CitizenLayout';
+import { UserProvider } from './context/UserContext';
+import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
+import LiveMap from './pages/LiveMap';
+import ReportEmergency from './pages/ReportEmergency';
+import ReportDetail from './pages/ReportDetail';
+import VerificationResult from './pages/VerificationResult';
+import SafeEvacuation from './pages/SafeEvacuation';
+import WeatherIntelligence from './pages/WeatherIntelligence';
+import Alerts from './pages/Alerts';
+import Login from './pages/Login';
 
 function App() {
-  const [view, setView] = useState('report');
-  const [reports, setReports] = useState([]);
-
-  const refreshReports = async () => {
-    const res = await fetch('http://localhost:5000/api/reports');
-    const data = await res.json();
-    setReports(data);
-  };
-
   return (
-    <div className="app">
-      <nav className="navbar">
-        <h1>🛡️ Disaster Guardian</h1>
-        <div>
-          <button className={view === 'report' ? 'active' : ''} onClick={() => setView('report')}>Report</button>
-          <button className={view === 'map' ? 'active' : ''} onClick={() => setView('map')}>Map</button>
-          <button className={view === 'list' ? 'active' : ''} onClick={() => { refreshReports(); setView('list'); }}>Reports</button>
-        </div>
-      </nav>
-      <main className="main">
-        {view === 'report' && <ReportForm onSubmitted={refreshReports} />}
-        {view === 'map' && <MapView reports={reports} />}
-        {view === 'list' && <ReportList reports={reports} />}
-      </main>
-    </div>
+    <UserProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<CitizenLayout />}>
+            <Route index element={<Home />} />
+            <Route path="login" element={<Login />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="map" element={<LiveMap />} />
+            <Route path="report" element={<ReportEmergency />} />
+            <Route path="report/:id" element={<ReportDetail />} />
+            <Route path="verification/:id" element={<VerificationResult />} />
+            <Route path="evacuation" element={<SafeEvacuation />} />
+            <Route path="weather" element={<WeatherIntelligence />} />
+            <Route path="alerts" element={<Alerts />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </UserProvider>
   );
 }
 
 export default App;
+

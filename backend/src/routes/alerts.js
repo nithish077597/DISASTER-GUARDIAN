@@ -62,4 +62,34 @@ router.get('/', async (req, res) => {
   res.json(alerts);
 });
 
+router.post('/', async (req, res) => {
+  const db = await getDb();
+  const { report_id, severity, channels, message } = req.body;
+  if (!severity || !message) {
+    return res.status(400).json({ error: 'severity and message are required' });
+  }
+
+  const reportId = report_id || 0;
+  const channelList = channels && Array.isArray(channels) ? channels : ['APP'];
+  const sentAt = new Date().toISOString();
+  const channelsJson = JSON.stringify(channelList).replace(/'/g, "''");
+  const msgEscaped = message.replace(/'/g, "''");
+  const sevEscaped = severity.replace(/'/g, "''");
+
+  db.run(`INSERT INTO alerts (report_id, severity, channels, message, sent_at) VALUES (${reportId}, '${sevEscaped}', '${channelsJson}', '${msgEscaped}', '${sentAt}')`);
+  persist();
+
+  const lastIdResult = db.exec('SELECT last_insert_rowid() as id');
+  const alertId = lastIdResult[0]?.values[0]?.[0] || 0;
+
+  res.status(201).json({
+    id: alertId,
+    report_id: reportId,
+    severity,
+    channels: channelList,
+    message,
+    sent_at: sentAt,
+  });
+});
+
 export default router;

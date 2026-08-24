@@ -53,7 +53,8 @@ const init = async () => {
       lat REAL NOT NULL,
       lng REAL NOT NULL,
       phone TEXT,
-      name TEXT
+      name TEXT,
+      last_active TEXT
     );
     CREATE TABLE IF NOT EXISTS alerts (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,6 +64,51 @@ const init = async () => {
       message TEXT NOT NULL,
       sent_at TEXT NOT NULL,
       FOREIGN KEY (report_id) REFERENCES reports(id)
+    );
+    CREATE TABLE IF NOT EXISTS team_members (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      email TEXT,
+      role TEXT DEFAULT 'team',
+      escalation_level INTEGER DEFAULT 1,
+      is_active INTEGER DEFAULT 1,
+      created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS notification_preferences (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      team_member_id INTEGER NOT NULL,
+      channel TEXT NOT NULL,
+      enabled INTEGER DEFAULT 1,
+      FOREIGN KEY (team_member_id) REFERENCES team_members(id)
+    );
+    CREATE TABLE IF NOT EXISTS alert_rules (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      severity TEXT NOT NULL,
+      channels TEXT NOT NULL,
+      team_member_ids TEXT NOT NULL,
+      escalation_delay_minutes INTEGER DEFAULT 15,
+      is_active INTEGER DEFAULT 1,
+      created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS alert_acknowledgments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      alert_id INTEGER NOT NULL,
+      team_member_id INTEGER NOT NULL,
+      acknowledged_at TEXT NOT NULL,
+      note TEXT,
+      FOREIGN KEY (alert_id) REFERENCES alerts(id),
+      FOREIGN KEY (team_member_id) REFERENCES team_members(id)
+    );
+    CREATE TABLE IF NOT EXISTS alert_escalations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      alert_id INTEGER NOT NULL,
+      from_level INTEGER NOT NULL,
+      to_level INTEGER NOT NULL,
+      triggered_at TEXT NOT NULL,
+      reason TEXT,
+      FOREIGN KEY (alert_id) REFERENCES alerts(id)
     );
   `);
 
@@ -81,21 +127,19 @@ const init = async () => {
     persist();
   }
 
-  const userCount = database.exec('SELECT COUNT(*) as count FROM users');
-  const ucount = userCount[0]?.values[0]?.[0] || 0;
-  if (ucount === 0) {
-    const mockUsers = [
-      ['u1', 28.6140, 77.2095, '+919876543210', 'Rahul'],
-      ['u2', 28.6135, 77.2085, '+919876543211', 'Priya'],
-      ['u3', 28.7045, 77.1030, '+919876543212', 'Amit'],
-      ['u4', 28.7040, 77.1020, '+919876543213', 'Sneha'],
-      ['u5', 28.6310, 77.2180, '+919876543214', 'Vikram'],
-      ['u6', 28.6300, 77.2160, '+919876543215', 'Anita'],
-    ];
-    for (const u of mockUsers) {
-      database.run('INSERT INTO users (id, lat, lng, phone, name) VALUES (?, ?, ?, ?, ?)', u);
-    }
+  // Ensure last_active column exists
+  try {
+    database.run('ALTER TABLE users ADD COLUMN last_active TEXT');
+  } catch (e) {
+    // Column already exists
+  }
+
+  // Clear legacy mock users if present
+  try {
+    database.run("DELETE FROM users WHERE id = 'u1' OR id = 'u2' OR id = 'u3' OR id = 'u4' OR id = 'u5' OR id = 'u6'");
     persist();
+  } catch (err) {
+    // Ignore error
   }
 };
 

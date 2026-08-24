@@ -1,4 +1,51 @@
-body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f3f4f6; }
-#root { height: 100vh; }
-button { cursor: pointer; }
-input, select, textarea { font-family: inherit; }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-slate-100 antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button {
+  cursor: pointer;
+}
+
+input, select, textarea {
+  font-family: inherit;
+}
+
+.glass-card {
+  @apply bg-glass/60 border border-glassBorder backdrop-blur-xl rounded-xl;
+}
+
+.glass-sidebar {
+  @apply bg-glass/40 border-r border-glassBorder backdrop-blur-xl rounded-r-2xl;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes pulse-critical {
+  0%, 100% { box-shadow: 0 0 8px 2px rgba(239, 68, 68, 0.5), 0 0 20px 6px rgba(239, 68, 68, 0.3); }
+  50% { box-shadow: 0 0 12px 6px rgba(239, 68, 68, 0.7), 0 0 30px 10px rgba(239, 68, 68, 0.5); }
+}
+
+.pulse-marker {
+  animation: pulse-critical 2s ease-in-out infinite;
+}
+
+.leaflet-popup-content-wrapper {
+  @apply bg-slate-900 text-slate-100 rounded-xl;
+}
+.leaflet-popup-tip {
+  @apply bg-slate-900;
+}
+.leaflet-popup-content p {
+  margin: 0.3em 0;
+}
