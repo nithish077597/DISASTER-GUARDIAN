@@ -1,0 +1,18 @@
+{
+  "name": "disaster-guardian",
+  "version": "1.0.0",
+  "description": "AI-Powered Disaster Guardian — college hackathon prototype",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:admin\" \"npm run dev:gateway\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:admin": "cd admin-dashboard && npm run dev",
+    "dev:gateway": "cd gateway && npm run dev",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install && cd ../admin-dashboard && npm install && cd ../gateway && npm install",
+    "lint": "echo \"Add linter configs per sub-package\"",
+    "test": "echo \"Add tests per sub-package\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
