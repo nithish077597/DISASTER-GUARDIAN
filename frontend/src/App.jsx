@@ -24,6 +24,7 @@ function App() {
             <Route path="map" element={<LiveMap />} />
             <Route path="report" element={<ReportEmergency />} />
             <Route path="report/:id" element={<ReportDetail />} />
+            <Route path="report/:id/verification" element={<VerificationResult />} />
             <Route path="verification/:id" element={<VerificationResult />} />
             <Route path="evacuation" element={<SafeEvacuation />} />
             <Route path="weather" element={<WeatherIntelligence />} />

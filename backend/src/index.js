@@ -1,3 +1,4 @@
+import datasetRouter from './routes/dataset.js';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -17,6 +18,7 @@ app.use(express.json());
 init();
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
+app.use('/api/dataset', datasetRouter);
 app.use('/api/reports', reportsRouter);
 app.use('/api/verification', verificationRouter);
 app.use('/api/geo', geoRouter);

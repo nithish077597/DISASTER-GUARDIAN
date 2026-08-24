@@ -29,8 +29,8 @@ const init = async () => {
     CREATE TABLE IF NOT EXISTS reports (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       disaster_type TEXT NOT NULL,
-      lat REAL NOT NULL,
-      lng REAL NOT NULL,
+      lat REAL NULL,
+      lng REAL NULL,
       description TEXT,
       timestamp TEXT NOT NULL,
       photo_url TEXT,
@@ -112,7 +112,37 @@ const init = async () => {
     );
   `);
 
+  // Add new emergency-case fields to existing reports table
+  const newColumns = [
+    ['report_type', "TEXT DEFAULT 'CITIZEN_REPORT'"],
+    ['location_status', "TEXT DEFAULT 'KNOWN'"],
+    ['location_description', 'TEXT'],
+    ['location_source', 'TEXT'],
+    ['people_count', 'INTEGER'],
+    ['injury_status', "TEXT DEFAULT 'UNKNOWN'"],
+    ['situation', 'TEXT'],
+    ['priority_score', 'INTEGER DEFAULT 0'],
+    ['priority_level', "TEXT DEFAULT 'UNKNOWN'"],
+    ['verification_level', "TEXT DEFAULT 'REPORTED'"]
+  ];
+
+  const existingColumnsResult = database.exec('PRAGMA table_info(reports)');
+  const existingColumns = new Set(
+    (existingColumnsResult[0]?.values || []).map(row => row[1])
+  );
+
+  for (const [columnName, columnDefinition] of newColumns) {
+    if (!existingColumns.has(columnName)) {
+      database.run(
+        `ALTER TABLE reports ADD COLUMN ${columnName} ${columnDefinition}`
+      );
+    }
+  }
+
+  persist();
+
   const shelterCount = database.exec('SELECT COUNT(*) as count FROM shelters');
+
   const count = shelterCount[0]?.values[0]?.[0] || 0;
   if (count === 0) {
     const shelters = [

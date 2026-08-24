@@ -51,7 +51,6 @@ export const ProgressBar = ({ value = 0, max = 100, color = 'cyan', className = 
     </div>
   );
 };
-
 export const GlassCard = ({ children, className = '', animate = true, ...props }) =>
   animate ? (
     <motion.div

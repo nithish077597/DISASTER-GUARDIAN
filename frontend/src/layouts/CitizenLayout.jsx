@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Home, Map, Send, Shield, Bell, LogIn, Menu, X, Navigation, User, AlertTriangle, LogOut, CloudRain,
+  Home, Map, Send, Shield, Bell, LogIn, Menu, X, Navigation, User, AlertTriangle, LogOut, CloudRain, CheckCircle2,
 } from 'lucide-react';
 import { useSystemStatus } from '../hooks';
 import { useUser } from '../context/UserContext';
@@ -10,6 +10,7 @@ import { StatusIndicator, Button } from '../components/ui';
 
 const navItems = [
   { name: 'Home', to: '/', icon: Home },
+  { name: 'Dashboard', to: '/dashboard', icon: Shield },
   { name: 'Live Map', to: '/map', icon: Map },
   { name: 'Report Emergency', to: '/report', icon: Send },
   { name: 'Evacuation', to: '/evacuation', icon: Navigation },

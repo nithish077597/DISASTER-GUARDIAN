@@ -171,7 +171,6 @@ export const EvacuationRoutePolyline = ({ from, to }) => {
     />
   );
 };
-
 export const FitToReports = ({ reports, userPos }) => {
   const map = useMap();
   const positions = useMemo(() => {

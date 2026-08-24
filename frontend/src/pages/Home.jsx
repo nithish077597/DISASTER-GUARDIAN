@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { Shield, Map, Send, AlertTriangle, Navigation, ShieldCheck, CloudRain, Bell, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Shield, Map, Send, AlertTriangle, Navigation, ShieldCheck, CloudRain, Bell, ArrowRight, LogIn, Users } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, StatusIndicator, GlassCard } from '../components/ui';
 import { fadeUp, fadeUpStagger } from '../animations/variants';
 import { useUser } from '../context/UserContext';
-import { ReportMarker, ShelterMarker, DangerZoneCircle, LiveUserMarker, EvacuationRoutePolyline } from '../components/MapMarkers';
+import { ReportMarker, ShelterMarker, DangerZoneCircle, EvacuationRoutePolyline } from '../components/MapMarkers';
 
 const features = [
   {
@@ -50,6 +50,13 @@ const MOCK_HERO_ZONES = [
   { center: { lat: 28.6139, lng: 77.2090 }, radius_m: 2500, severity: 'CRITICAL' },
   { center: { lat: 28.6450, lng: 77.1800 }, radius_m: 1800, severity: 'HIGH_RISK' },
 ];
+
+const colorMap = {
+  cyan: 'from-cyan-500 to-blue-500',
+  amber: 'from-amber-400 to-orange-500',
+  emerald: 'from-emerald-400 to-green-500',
+  red: 'from-red-500 to-rose-500',
+};
 
 export default function Home() {
   const { user, isLoggedIn } = useUser();
@@ -98,6 +105,19 @@ function HeroSection({ user, isLoggedIn, navigate }) {
 
       {/* Primary & Secondary CTAs */}
       <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+        {!isLoggedIn ? (
+          <Link to="/login">
+            <Button variant="secondary" size="xl" icon={LogIn} className="border-cyan-500/30 text-cyan-300">
+              Citizen Login
+            </Button>
+          </Link>
+        ) : (
+          <Link to="/login">
+            <Button variant="secondary" size="xl" icon={Users} className="border-cyan-500/30 text-cyan-300">
+              Profile: {user.name}
+            </Button>
+          </Link>
+        )}
         <Link to="/report">
           <Button variant="primary" size="xl" icon={Send} className="bg-gradient-to-r from-red-500 to-rose-600 border-none shadow-xl shadow-red-500/30 text-white font-bold">
             Report an Emergency

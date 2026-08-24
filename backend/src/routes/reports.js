@@ -7,12 +7,70 @@ const rowToObj = (cols, row) => Object.fromEntries(cols.map((c, i) => [c, row[i]
 
 router.post('/', async (req, res) => {
   const db = await getDb();
-  const { disaster_type, lat, lng, description, timestamp, photo_url, reporter_id } = req.body;
-  if (!disaster_type || lat == null || lng == null || !reporter_id) {
+  const {
+  disaster_type,
+  lat,
+  lng,
+  description,
+  timestamp,
+  photo_url,
+  reporter_id,
+  report_type,
+  location_status,
+  location_description,
+  location_source,
+  people_count,
+  injury_status,
+  situation,
+  priority_score,
+  priority_level,
+  verification_level
+} = req.body;
+  if (!disaster_type || !reporter_id)  {
     return res.status(400).json({ error: 'disaster_type, lat, lng, reporter_id are required' });
   }
-  const stmt = db.prepare('INSERT INTO reports (disaster_type, lat, lng, description, timestamp, photo_url, reporter_id) VALUES (?, ?, ?, ?, ?, ?, ?)');
-  stmt.run([disaster_type, lat, lng, description || '', timestamp || new Date().toISOString(), photo_url || '', reporter_id]);
+  const stmt = db.prepare(`
+  INSERT INTO reports (
+    disaster_type,
+    lat,
+    lng,
+    description,
+    timestamp,
+    photo_url,
+    reporter_id,
+    report_type,
+    location_status,
+    location_description,
+    location_source,
+    people_count,
+    injury_status,
+    situation,
+    priority_score,
+    priority_level,
+    verification_level
+  )
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`);
+
+stmt.run([
+  disaster_type,
+  lat ?? null,
+  lng ?? null,
+  description || '',
+  timestamp || new Date().toISOString(),
+  photo_url || '',
+  reporter_id,
+  report_type || 'CITIZEN_REPORT',
+  location_status || 'KNOWN',
+  location_description || '',
+  location_source || '',
+  people_count ?? null,
+  injury_status || 'UNKNOWN',
+  situation || '',
+  priority_score ?? 0,
+  priority_level || 'UNKNOWN',
+  verification_level || 'REPORTED'
+]);
   persist();
   const result = db.exec('SELECT * FROM reports ORDER BY id DESC LIMIT 1');
   const cols = result[0]?.columns;
