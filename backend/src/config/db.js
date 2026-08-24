@@ -29,8 +29,8 @@ const init = async () => {
     CREATE TABLE IF NOT EXISTS reports (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       disaster_type TEXT NOT NULL,
-      lat REAL NOT NULL,
-      lng REAL NOT NULL,
+      lat REAL NULL,
+      lng REAL NULL,
       description TEXT,
       timestamp TEXT NOT NULL,
       photo_url TEXT,
@@ -53,7 +53,8 @@ const init = async () => {
       lat REAL NOT NULL,
       lng REAL NOT NULL,
       phone TEXT,
-      name TEXT
+      name TEXT,
+      last_active TEXT
     );
     CREATE TABLE IF NOT EXISTS alerts (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -64,9 +65,39 @@ const init = async () => {
       sent_at TEXT NOT NULL,
       FOREIGN KEY (report_id) REFERENCES reports(id)
     );
-  `);
+    `);
+
+  // Add new emergency-case fields to existing reports table
+  const newColumns = [
+    ['report_type', "TEXT DEFAULT 'CITIZEN_REPORT'"],
+    ['location_status', "TEXT DEFAULT 'KNOWN'"],
+    ['location_description', 'TEXT'],
+    ['location_source', 'TEXT'],
+    ['people_count', 'INTEGER'],
+    ['injury_status', "TEXT DEFAULT 'UNKNOWN'"],
+    ['situation', 'TEXT'],
+    ['priority_score', 'INTEGER DEFAULT 0'],
+    ['priority_level', "TEXT DEFAULT 'UNKNOWN'"],
+    ['verification_level', "TEXT DEFAULT 'REPORTED'"]
+  ];
+
+  const existingColumnsResult = database.exec('PRAGMA table_info(reports)');
+  const existingColumns = new Set(
+    (existingColumnsResult[0]?.values || []).map(row => row[1])
+  );
+
+  for (const [columnName, columnDefinition] of newColumns) {
+    if (!existingColumns.has(columnName)) {
+      database.run(
+        `ALTER TABLE reports ADD COLUMN ${columnName} ${columnDefinition}`
+      );
+    }
+  }
+
+  persist();
 
   const shelterCount = database.exec('SELECT COUNT(*) as count FROM shelters');
+
   const count = shelterCount[0]?.values[0]?.[0] || 0;
   if (count === 0) {
     const shelters = [
@@ -81,21 +112,19 @@ const init = async () => {
     persist();
   }
 
-  const userCount = database.exec('SELECT COUNT(*) as count FROM users');
-  const ucount = userCount[0]?.values[0]?.[0] || 0;
-  if (ucount === 0) {
-    const mockUsers = [
-      ['u1', 28.6140, 77.2095, '+919876543210', 'Rahul'],
-      ['u2', 28.6135, 77.2085, '+919876543211', 'Priya'],
-      ['u3', 28.7045, 77.1030, '+919876543212', 'Amit'],
-      ['u4', 28.7040, 77.1020, '+919876543213', 'Sneha'],
-      ['u5', 28.6310, 77.2180, '+919876543214', 'Vikram'],
-      ['u6', 28.6300, 77.2160, '+919876543215', 'Anita'],
-    ];
-    for (const u of mockUsers) {
-      database.run('INSERT INTO users (id, lat, lng, phone, name) VALUES (?, ?, ?, ?, ?)', u);
-    }
+  // Ensure last_active column exists
+  try {
+    database.run('ALTER TABLE users ADD COLUMN last_active TEXT');
+  } catch (e) {
+    // Column already exists
+  }
+
+  // Clear legacy mock users if present
+  try {
+    database.run("DELETE FROM users WHERE id = 'u1' OR id = 'u2' OR id = 'u3' OR id = 'u4' OR id = 'u5' OR id = 'u6'");
     persist();
+  } catch (err) {
+    // Ignore error
   }
 };
 
