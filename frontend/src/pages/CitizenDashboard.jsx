@@ -19,6 +19,7 @@ import EmergencyTickerBanner from '../components/EmergencyTickerBanner';
 import LiveNewsFeed from '../components/LiveNewsFeed';
 import MobileNav from '../components/MobileNav';
 import DemoBar from '../components/DemoBar';
+import ThemeToggle from '../components/ui/ThemeToggle';
 import { ShelterMarker, DangerZoneCircle, HighRiskZoneCircle, MediumRiskZoneCircle, LowRiskZoneCircle, EvacuationRoutePolyline, UserMarker } from '../components/MapMarkers';
 import { Link } from 'react-router-dom';
 import 'leaflet/dist/leaflet.css';
@@ -139,6 +140,7 @@ export default function CitizenDashboard() {
         locationName={locationName}
       />
 
+
       <EmergencyGuidanceModal
         isOpen={guidanceModalOpen}
         onClose={() => setGuidanceModalOpen(false)}
@@ -187,6 +189,9 @@ export default function CitizenDashboard() {
               ))}
             </select>
           </div>
+
+          {/* LIGHT / ROYAL NIGHT THEME SWITCH */}
+          <ThemeToggle />
 
           <Link to="/alerts" className="relative p-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 hover:text-white" title="Alerts">
             <Bell className="w-4 h-4" />

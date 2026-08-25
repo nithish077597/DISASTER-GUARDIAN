@@ -3,9 +3,28 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-slate-950 text-slate-100 font-sans antialiased selection:bg-red-600/30 selection:text-red-200;
+  html {
+    scroll-behavior: smooth;
   }
+  body {
+    @apply bg-slate-950 text-slate-100 font-sans antialiased selection:bg-gold-500/30 selection:text-gold-200;
+  }
+}
+
+/* Royal scrollbar to match the Indigo & Gold theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #080b1f;
+}
+::-webkit-scrollbar-thumb {
+  background: #232950;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #373f72;
 }
 
 /* Pulsing Red Light Beacon for Affected Disaster Zones */
@@ -35,20 +54,133 @@
   }
 }
 
-/* Leaflet Map custom fixes */
+/* Gold shimmer utility for premium headline accents */
+.gold-shimmer-text {
+  background: linear-gradient(90deg, #b8942c 0%, #eed67c 25%, #fdfaf0 50%, #eed67c 75%, #b8942c 100%);
+  background-size: 500px 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmerText 4s linear infinite;
+}
+
+@keyframes shimmerText {
+  0% { background-position: -500px 0; }
+  100% { background-position: 500px 0; }
+}
+
+/* Voice command listening ring */
+.voice-listening-ring::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  border: 2px solid rgba(212, 175, 55, 0.7);
+  animation: voiceRing 1.2s ease-out infinite;
+}
+
+@keyframes voiceRing {
+  0% { transform: scale(0.9); opacity: 1; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+/* Leaflet Map custom fixes (Royal Indigo palette) */
 .leaflet-container {
-  background-color: #020617 !important;
+  background-color: #080b1f !important;
   font-family: inherit !important;
 }
 
 .leaflet-popup-content-wrapper {
-  background-color: #0f172a !important;
-  color: #f8fafc !important;
-  border: 1px solid #334155 !important;
+  background-color: #131735 !important;
+  color: #e8eafb !important;
+  border: 1px solid #232950 !important;
   border-radius: 0.75rem !important;
   padding: 0.25rem !important;
 }
 
 .leaflet-popup-tip {
-  background-color: #0f172a !important;
+  background-color: #131735 !important;
 }
+
+/* ==========================================================================
+   LIGHT THEME — "Royal Daylight"
+   A light Royal Indigo & Gold variant driven by the existing ThemeContext.
+   Scoped under html.light so the whole hardcoded-dark app flips at once.
+   ========================================================================== */
+
+html.light body {
+  background-color: #eef0fb;
+  color: #141838;
+}
+
+/* --- Surfaces --- */
+html.light [class*="bg-slate-950"] { background-color: #eef0fb; }
+html.light [class*="bg-slate-900"] { background-color: #ffffff; }
+html.light [class*="bg-slate-800"] { background-color: #dfe3f6; }
+html.light [class*="hover\\:bg-slate-800"]:hover,
+html.light [class*="bg-slate-700"] { background-color: #cdd4ef; }
+html.light [class*="bg-white\\/5"] { background-color: rgba(20, 24, 56, 0.05); }
+html.light [class*="bg-white\\/10"] { background-color: rgba(20, 24, 56, 0.08); }
+
+/* --- Ink (text) --- */
+html.light [class*="text-slate-100"],
+html.light [class*="text-slate-200"] { color: #141838; }
+html.light [class*="text-slate-300"] { color: #2b3260; }
+html.light [class*="text-slate-400"] { color: #565e88; }
+html.light [class*="text-slate-500"] { color: #737aa0; }
+html.light [class*="placeholder-slate-500"]::placeholder { color: #737aa0; }
+
+/* Headings/cards written as text-white flip to ink... */
+html.light .text-white { color: #141838; }
+/* ...but stay WHITE on colored buttons, badges, markers & gradients */
+html.light [class*="bg-red"] .text-white,
+html.light [class*="bg-emerald"] .text-white,
+html.light [class*="bg-cyan"] .text-white,
+html.light [class*="bg-indigo"] .text-white,
+html.light [class*="bg-blue"] .text-white,
+html.light [class*="bg-gold"] .text-white,
+html.light [class*="from-red"] .text-white,
+html.light [class*="from-cyan"] .text-white,
+html.light [class*="from-gold"] .text-white,
+html.light [class*="from-emerald"] .text-white,
+html.light [class*="from-blue"] .text-white,
+html.light [class*="gradient-navy"] .text-white,
+html.light [class*="gradient-accent"] .text-white {
+  color: #ffffff;
+}
+
+/* --- Borders --- */
+html.light [class*="border-slate-950"] { border-color: #dfe3f6; }
+html.light [class*="border-slate-800"] { border-color: #d6dbf1; }
+html.light [class*="border-slate-700"] { border-color: #c3caea; }
+html.light [class*="border-white\\/10"],
+html.light [class*="border-white\\/15"] { border-color: rgba(20, 24, 56, 0.12); }
+html.light [class*="divide-slate-800"] > :not([hidden]) ~ :not([hidden]) { border-color: #d6dbf1; }
+
+/* --- Accents: darken for contrast on light surfaces --- */
+html.light [class*="text-cyan-300"],
+html.light [class*="text-cyan-400"] { color: #2563eb; }
+html.light [class*="text-gold-300"],
+html.light [class*="text-gold-400"] { color: #96761f; }
+html.light [class*="text-emerald-300"],
+html.light [class*="text-emerald-400"] { color: #15803d; }
+html.light .gold-shimmer-text {
+  background: linear-gradient(90deg, #96761f 0%, #d4af37 30%, #f5e6ae 50%, #d4af37 70%, #96761f 100%);
+  background-size: 500px 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* --- Light scrollbar --- */
+html.light ::-webkit-scrollbar-track { background: #e3e6f8; }
+html.light ::-webkit-scrollbar-thumb { background: #c3caea; }
+html.light ::-webkit-scrollbar-thumb:hover { background: #a7aee8; }
+
+/* --- Leaflet in light mode --- */
+html.light .leaflet-container { background-color: #dfe3f6 !important; }
+html.light .leaflet-popup-content-wrapper {
+  background-color: #ffffff !important;
+  color: #141838 !important;
+  border: 1px solid #c3caea !important;
+}
+html.light .leaflet-popup-tip { background-color: #ffffff !important; }

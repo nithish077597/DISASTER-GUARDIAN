@@ -140,7 +140,7 @@ export default function VerificationResult() {
           <GlassCard className="p-6 border border-white/10">
             <h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">Verification Factors</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FactorRow label="Rainfall contribution (24h)" value={`${rainfall} mm`} sub={`+${rainfallPts} pts`} icon={Droplets} color={rainfall >= 20 ? '#06b6d4' : '#94a3b8'} />
+              <FactorRow label="Rainfall contribution (24h)" value={`${rainfall} mm`} sub={`+${rainfallPts} pts`} icon={Droplets} color={rainfall >= 20 ? '#3b82f6' : '#94a3b8'} />
               <FactorRow label="Nearby reports (within 2km)" value={`${nearbyCount} reports`} sub={`+${nearbyPts} pts`} icon={Users} color={nearbyCount >= 2 ? '#8b5cf6' : '#94a3b8'} />
               <FactorRow label="Reporter reliability" value="Mock baseline" sub="+10 pts max" icon={Shield} color="#22c55e" />
               <FactorRow label="Final confidence" value={`${score}%`} sub={info.label} icon={BarChart3} color={info.color} highlight />

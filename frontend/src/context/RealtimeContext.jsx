@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { weatherApi, reportsApi } from '../api';
 import { alertSoundService } from '../services/alertSoundService';
+import { criticalAnnouncer } from '../services/criticalAnnouncer';
 
 const RealtimeContext = createContext(null);
 
@@ -206,8 +207,16 @@ export function RealtimeProvider({ children }) {
       timestamp: new Date().toISOString(),
     };
     setEmergencyMessages((prev) => [entry, ...prev].slice(0, 10));
+
+    // VOICE INFORMER: announce CRITICAL emergency messages aloud
+    if (entry.category === 'CRITICAL' && !criticalAnnouncer.isMuted()) {
+      criticalAnnouncer.speak(
+        `Critical alert. ${entry.title}. ${entry.message}${entry.locationName ? ` Near ${entry.locationName}.` : ''}`,
+        voiceLanguage
+      );
+    }
     return entry;
-  }, []);
+  }, [voiceLanguage]);
 
   const dismissEmergencyMessage = useCallback((id) => {
     setEmergencyMessages((prev) => prev.filter((m) => m.id !== id));

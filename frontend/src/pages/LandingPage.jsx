@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShieldAlert, User, ShieldCheck, MapPin, CloudRain, Shield, AlertTriangle, Send, UserCheck, ArrowRight } from 'lucide-react';
 import { geoService } from '../services/geoService';
 import { authService } from '../services/authService';
+import ThemeToggle from '../components/ui/ThemeToggle';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ export default function LandingPage() {
 
         {/* Dual Entry Buttons */}
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Link to="/login">
             <button className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-extrabold text-xs uppercase tracking-wider shadow-md transition-all flex items-center gap-1.5">
               <User className="w-3.5 h-3.5" />
@@ -69,8 +71,8 @@ export default function LandingPage() {
           <span>??? REAL-TIME DISASTER EARLY WARNING & EMERGENCY ASSISTANCE</span>
         </div>
 
-        <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight max-w-3xl mx-auto leading-tight uppercase">
-          AI DISASTER GUARDIAN
+        <h1 className="text-3xl md:text-5xl font-black tracking-tight max-w-3xl mx-auto leading-tight uppercase">
+          <span className="gold-shimmer-text drop-shadow-[0_0_25px_rgba(212,175,55,0.35)]">AI DISASTER GUARDIAN</span>
         </h1>
 
         <p className="text-sm md:text-base text-slate-300 max-w-2xl mx-auto font-medium leading-relaxed">

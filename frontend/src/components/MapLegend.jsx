@@ -7,7 +7,7 @@ export default function MapLegend() {
     { label: 'High Risk', color: '#ea580c', shape: '◉' },
     { label: 'Critical', color: '#dc2626', shape: '⬤' },
     { label: 'Safe Location', color: '#22c55e', shape: '◆' },
-    { label: 'Evacuation Route', color: '#06b6d4', shape: '—' },
+    { label: 'Evacuation Route', color: '#3b82f6', shape: '—' },
   ];
 
   return (

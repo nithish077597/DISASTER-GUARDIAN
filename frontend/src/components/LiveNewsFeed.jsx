@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Newspaper, MapPin, Users, Camera, Clock, RefreshCw, Radio } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Newspaper, MapPin, Users, Camera, Clock, RefreshCw, Radio, Volume2, VolumeX } from 'lucide-react';
 import { newsApi } from '../api';
 import { getDisasterPhoto } from '../services/photoLibrary';
+import { criticalAnnouncer } from '../services/criticalAnnouncer';
 
 const CATEGORY_BADGE = {
   NORMAL: 'bg-sky-950 border-sky-500/50 text-sky-300',
@@ -23,17 +24,40 @@ const timeAgo = (iso) => {
 export default function LiveNewsFeed({ locationName = '', coords = null }) {
   const [newsItems, setNewsItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [voiceOn, setVoiceOn] = useState(!criticalAnnouncer.isMuted());
+  const seenCriticalIdsRef = useRef(new Set());
+  const isFirstLoadRef = useRef(true);
 
   const fetchNews = async () => {
     setLoading(true);
     try {
       const data = await newsApi.live(coords?.lat, coords?.lng, 100);
-      setNewsItems(Array.isArray(data) ? data : []);
+      const items = Array.isArray(data) ? data : [];
+      setNewsItems(items);
+
+      // VOICE ANNOUNCEMENT: speak aloud any NEWLY arriving CRITICAL news.
+      const newCritical = items.filter(
+        (item) => item.category === 'CRITICAL' && !seenCriticalIdsRef.current.has(item.id)
+      );
+      if (!isFirstLoadRef.current && !criticalAnnouncer.isMuted()) {
+        // Announce only the most recent one to avoid speech pile-up
+        if (newCritical.length > 0) {
+          criticalAnnouncer.announceCriticalNews(newCritical[0], locationName);
+        }
+      }
+      newCritical.forEach((item) => seenCriticalIdsRef.current.add(item.id));
+      isFirstLoadRef.current = false;
     } catch {
       setNewsItems([]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggleVoice = () => {
+    const next = !voiceOn;
+    setVoiceOn(next);
+    criticalAnnouncer.setMuted(!next);
   };
 
   useEffect(() => {
@@ -64,14 +88,28 @@ export default function LiveNewsFeed({ locationName = '', coords = null }) {
             )}
           </div>
         </div>
-        <button
-          onClick={fetchNews}
-          disabled={loading}
-          className="p-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 hover:text-cyan-400 transition-colors"
-          title="Refresh news"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-        </button>
+        <div className="flex items-center gap-2">
+          {/* VOICE ANNOUNCEMENTS: auto-speaks critical news aloud */}
+          <button
+            onClick={toggleVoice}
+            className={`p-2 rounded-xl bg-slate-950 border transition-colors ${
+              voiceOn
+                ? 'border-gold-500/50 text-gold-400 hover:bg-gold-500/10'
+                : 'border-slate-800 text-slate-500 hover:text-slate-300'
+            }`}
+            title={voiceOn ? 'Critical news voice announcements ON — click to mute' : 'Critical news voice announcements OFF — click to unmute'}
+          >
+            {voiceOn ? <Volume2 className="w-3.5 h-3.5 animate-pulse" /> : <VolumeX className="w-3.5 h-3.5" />}
+          </button>
+          <button
+            onClick={fetchNews}
+            disabled={loading}
+            className="p-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 hover:text-cyan-400 transition-colors"
+            title="Refresh news"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
       </div>
 
       {loading && newsItems.length === 0 ? (

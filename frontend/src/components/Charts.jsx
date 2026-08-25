@@ -71,8 +71,8 @@ export function DisasterDonutChart({ data }) {
               {chartData.map((entry) => (
                 <Cell
                   key={entry.name}
-                  fill={DISASTER_COLORS[entry.name] || '#06b6d4'}
-                  style={{ filter: 'drop-shadow(0px 0px 6px ' + (DISASTER_COLORS[entry.name] || '#06b6d4') + '80)' }}
+                  fill={DISASTER_COLORS[entry.name] || '#3b82f6'}
+                  style={{ filter: 'drop-shadow(0px 0px 6px ' + (DISASTER_COLORS[entry.name] || '#3b82f6') + '80)' }}
                 />
               ))}
             </Pie>
@@ -89,7 +89,7 @@ export function DisasterDonutChart({ data }) {
       {/* Legend Item List */}
       <div className="flex-1 space-y-3 w-full">
         {chartData.map((entry) => {
-          const color = DISASTER_COLORS[entry.name] || '#06b6d4';
+          const color = DISASTER_COLORS[entry.name] || '#3b82f6';
           const pct = entry.percentage || Math.round((entry.value / Math.max(totalReports, 1)) * 100) + '%';
           return (
             <div key={entry.name} className="flex items-center justify-between text-xs font-medium bg-slate-900/60 px-3 py-2 rounded-xl border border-slate-800/60">
@@ -136,8 +136,8 @@ export function TrendAreaChart() {
           <AreaChart data={activeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="cyanGradientFrontend" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.4} />
-                <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
+                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
@@ -147,12 +147,12 @@ export function TrendAreaChart() {
             <Area
               type="monotone"
               dataKey="count"
-              stroke="#06b6d4"
+              stroke="#3b82f6"
               strokeWidth={3}
               fillOpacity={1}
               fill="url(#cyanGradientFrontend)"
-              dot={{ r: 4, fill: '#06b6d4', stroke: '#ffffff', strokeWidth: 2 }}
-              activeDot={{ r: 6, fill: '#22d3ee', stroke: '#ffffff', strokeWidth: 2 }}
+              dot={{ r: 4, fill: '#3b82f6', stroke: '#ffffff', strokeWidth: 2 }}
+              activeDot={{ r: 6, fill: '#609dfa', stroke: '#ffffff', strokeWidth: 2 }}
             />
           </AreaChart>
         </ResponsiveContainer>

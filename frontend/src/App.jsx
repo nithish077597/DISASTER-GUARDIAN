@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import CitizenLayout from './layouts/CitizenLayout';
 import { UserProvider } from './context/UserContext';
 import { RealtimeProvider } from './context/RealtimeContext';
+import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
@@ -24,15 +25,20 @@ import GatewayPage from './pages/GatewayPage';
 import SettingsPage from './pages/SettingsPage';
 import CriticalEmergencyAlertModal from './components/CriticalEmergencyAlertModal';
 import CriticalSirenWatcher from './components/CriticalSirenWatcher';
+import VoiceCommandBar from './components/VoiceCommandBar';
 
 function App() {
   return (
-    <UserProvider>
+    <ThemeProvider>
+      <UserProvider>
       <RealtimeProvider>
         <BrowserRouter>
           {/* SOFTWARE SIREN: opens ONLY at CRITICAL stage */}
           <CriticalSirenWatcher />
           <CriticalEmergencyAlertModal />
+
+          {/* HANDS-FREE VOICE COMMANDS: available on every page */}
+          <VoiceCommandBar />
           <Routes>
             {/* Public Dual Entry Landing Page */}
             <Route path="/" element={<LandingPage />} />
@@ -76,7 +82,8 @@ function App() {
           </Routes>
         </BrowserRouter>
       </RealtimeProvider>
-    </UserProvider>
+      </UserProvider>
+    </ThemeProvider>
   );
 }
 

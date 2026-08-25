@@ -83,7 +83,7 @@ function HeroSection({ user, isLoggedIn, navigate }) {
       {/* Main Headline */}
       <motion.h1 variants={fadeUp} className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-4 leading-tight">
         <span className="text-white">AI-Powered </span>
-        <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-300 to-indigo-200">Disaster Guardian</span>
+        <span className="gold-shimmer-text drop-shadow-[0_0_25px_rgba(212,175,55,0.35)]">Disaster Guardian</span>
       </motion.h1>
 
       {/* Subtitle */}
