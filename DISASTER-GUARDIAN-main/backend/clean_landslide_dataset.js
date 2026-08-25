@@ -6,8 +6,15 @@ import { parse } from 'csv-parse/sync';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const inputFile = path.join(__dirname, 'datasets/raw/rows.csv');
-const outputDir = path.join(__dirname, 'datasets/cleaned');
+let inputFile = path.join(__dirname, 'datasets/raw/rows.csv');
+if (!fs.existsSync(inputFile)) {
+  inputFile = path.join(__dirname, '../DISASTER-GUARDIAN-main/backend/datasets/raw/rows.csv');
+}
+
+let outputDir = path.join(__dirname, 'datasets/cleaned');
+if (!fs.existsSync(inputFile)) {
+  outputDir = path.join(__dirname, '../DISASTER-GUARDIAN-main/backend/datasets/cleaned');
+}
 const outputFile = path.join(outputDir, 'landslides_clean.csv');
 
 fs.mkdirSync(outputDir, { recursive: true });

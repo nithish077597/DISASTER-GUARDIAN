@@ -1,0 +1,15 @@
+node_modules/
+**/node_modules/
+.env
+**/.env*
+*.db
+**/*.db
+*.sqlite
+**/*.sqlite
+dist/
+**/dist/
+build/
+**/build/
+.DS_Store
+.vscode/
+DISASTER-GUARDIAN-BACKUP/
