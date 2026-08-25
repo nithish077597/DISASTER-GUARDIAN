@@ -1,6 +1,7 @@
 import express from 'express';
 import { getDb, persist } from '../config/db.js';
 import { sendAlert } from '../services/alertService.js';
+import { CATEGORY_CHANNELS, normalizeCategory } from '../services/emergencyService.js';
 
 const router = express.Router();
 
@@ -25,19 +26,20 @@ router.post('/send/:reportId', async (req, res) => {
   const report = row ? rowToObj(cols, row) : null;
   if (!report) return res.status(404).json({ error: 'Report not found' });
 
-  const severity = report.severity || 'LOW_CONFIDENCE';
-  let channels = ['APP'];
-  if (severity === 'HIGH_RISK') channels.push('SMS');
-  if (severity === 'CRITICAL') channels.push('SMS', 'VOICE', 'GATEWAY');
+  // Category escalation ladder:
+  // NORMAL -> notification | HIGH -> +offline SMS | RISK -> +voice message
+  // CRITICAL -> all (notification, SMS, voicemail, call, gateway siren)
+  const category = normalizeCategory(report.severity);
+  const channels = CATEGORY_CHANNELS[category] || ['APP'];
 
   const instr = INSTRUCTIONS[report.disaster_type] || { DO: [], DONT: [] };
-  const message = `DISASTER ALERT [${severity}] — ${report.disaster_type} near (${report.lat}, ${report.lng}). DO: ${instr.DO.join(', ')}. DON'T: ${instr.DONT.join(', ')}.`;
+  const message = `DISASTER ALERT [${category}] - ${report.disaster_type} near (${report.lat}, ${report.lng}). DO: ${instr.DO.join(', ')}. DON'T: ${instr.DONT.join(', ')}.`;
 
   const sentAt = new Date().toISOString();
   const alertResult = await sendAlert(channels, report, message);
 
   const channelsJson = JSON.stringify(channels).replace(/'/g, "''");
-  db.run(`INSERT INTO alerts (report_id, severity, channels, message, sent_at) VALUES (${report.id}, '${severity.replace(/'/g, "''")}', '${channelsJson}', '${message.replace(/'/g, "''")}', '${sentAt.replace(/'/g, "''")}')`);
+  db.run(`INSERT INTO alerts (report_id, severity, channels, message, sent_at) VALUES (${report.id}, '${category.replace(/'/g, "''")}', '${channelsJson}', '${message.replace(/'/g, "''")}', '${sentAt.replace(/'/g, "''")}')`);
   persist();
 
   const lastIdResult = db.exec('SELECT last_insert_rowid() as id');
@@ -46,7 +48,8 @@ router.post('/send/:reportId', async (req, res) => {
   res.json({
     alert_id: alertId,
     report_id: report.id,
-    severity,
+    severity: report.severity,
+    category,
     channels,
     message,
     sent_at: sentAt,

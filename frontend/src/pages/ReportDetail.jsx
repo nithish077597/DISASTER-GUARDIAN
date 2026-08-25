@@ -44,7 +44,7 @@ export default function ReportDetail() {
     }
   };
 
-  if (loading) return <Loader text="Loading report…" />;
+  if (loading) return <Loader text="Loading report???" />;
   if (error) return <ErrorState error={error} onRetry={() => { window.location.reload(); }} />;
   if (!report) return <EmptyState title="Report not found" icon={FileText} />;
 
@@ -54,7 +54,7 @@ export default function ReportDetail() {
     <div className="max-w-4xl mx-auto space-y-6">
       <motion.header initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-4">
         <Button variant="ghost" size="sm" icon={ArrowLeft} onClick={() => navigate(-1)}>Back</Button>
-        <h1 className="text-2xl font-bold text-white">{disasterLabel(report.disaster_type)} — Report #{report.id}</h1>
+        <h1 className="text-2xl font-bold text-white">{disasterLabel(report.disaster_type)} ??? Report #{report.id}</h1>
       </motion.header>
 
       {verifyError && <AlertBanner type="critical" title="Verification failed" message={verifyError} onClose={() => setVerifyError(null)} />}

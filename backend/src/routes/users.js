@@ -25,30 +25,42 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Register or Log in a live user
+// Register or Log in a live user (name + mobile + location stored in dataset)
 router.post('/login', async (req, res) => {
   try {
     const db = await getDb();
-    let { id, name, phone, lat, lng } = req.body;
+    let { id, name, phone, mobile, location, lat, lng } = req.body;
 
-    if (!name || lat == null || lng == null) {
-      return res.status(400).json({ error: 'Name, latitude, and longitude are required' });
+    const phoneNumber = phone || mobile || '';
+
+    if (!name || !phoneNumber) {
+      return res.status(400).json({ error: 'Name and mobile number are required' });
     }
 
     if (!id) {
-      id = `usr_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      const existingByPhone = db.exec(`SELECT * FROM users WHERE phone = '${String(phoneNumber).replace(/'/g, "''")}'`);
+      if (existingByPhone && existingByPhone.length > 0 && existingByPhone[0].values.length > 0) {
+        id = existingByPhone[0].values[0][existingByPhone[0].columns.indexOf('id')];
+      } else {
+        id = `usr_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      }
     }
 
     const now = new Date().toISOString();
+    const safeLat = lat != null ? Number(lat) : 0;
+    const safeLng = lng != null ? Number(lng) : 0;
+    const safeLocation = location || '';
+    const safeName = String(name).replace(/'/g, "''");
+    const safePhone = String(phoneNumber).replace(/'/g, "''");
 
     // Check if user exists
     const existing = db.exec(`SELECT * FROM users WHERE id = '${id}'`);
     if (existing && existing.length > 0 && existing[0].values.length > 0) {
-      const stmt = db.prepare('UPDATE users SET name = ?, phone = ?, lat = ?, lng = ?, last_active = ? WHERE id = ?');
-      stmt.run([name, phone || '', Number(lat), Number(lng), now, id]);
+      const stmt = db.prepare('UPDATE users SET name = ?, phone = ?, location = ?, lat = ?, lng = ?, last_active = ? WHERE id = ?');
+      stmt.run([safeName, safePhone, safeLocation, safeLat, safeLng, now, id]);
     } else {
-      const stmt = db.prepare('INSERT INTO users (id, name, phone, lat, lng, last_active) VALUES (?, ?, ?, ?, ?, ?)');
-      stmt.run([id, name, phone || '', Number(lat), Number(lng), now]);
+      const stmt = db.prepare('INSERT INTO users (id, name, phone, location, lat, lng, last_active) VALUES (?, ?, ?, ?, ?, ?, ?)');
+      stmt.run([id, safeName, safePhone, safeLocation, safeLat, safeLng, now]);
     }
 
     persist();
@@ -56,7 +68,9 @@ router.post('/login', async (req, res) => {
     const userResult = db.exec(`SELECT * FROM users WHERE id = '${id}'`);
     const cols = userResult[0]?.columns;
     const row = userResult[0]?.values[0];
-    const user = row ? rowToObj(cols, row) : { id, name, phone, lat, lng, last_active: now };
+    const user = row
+      ? { ...rowToObj(cols, row), role: 'CITIZEN' }
+      : { id, name: safeName, phone: safePhone, location: safeLocation, lat: safeLat, lng: safeLng, role: 'CITIZEN', last_active: now };
 
     res.status(200).json(user);
   } catch (error) {

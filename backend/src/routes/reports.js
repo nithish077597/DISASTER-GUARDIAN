@@ -1,5 +1,6 @@
 import express from 'express';
 import { getDb, persist } from '../config/db.js';
+import { evaluateAndDispatchReport } from '../services/emergencyService.js';
 
 const router = express.Router();
 
@@ -76,7 +77,11 @@ stmt.run([
   const cols = result[0]?.columns;
   const row = result[0]?.values[0];
   const report = row ? rowToObj(cols, row) : {};
-  res.status(201).json(report);
+
+  // Auto-evaluate: publish live news (real photo + >3 reporters) or send category notifications
+  const evaluation = await evaluateAndDispatchReport(report);
+
+  res.status(201).json({ ...report, emergency: evaluation });
 });
 
 router.get('/', async (req, res) => {

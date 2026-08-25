@@ -25,12 +25,12 @@ export const getRiskLevel = (report) => {
   return 'LOW_CONFIDENCE';
 };
 
-export const formatDistance = (km) => { if (km == null || isNaN(km)) return '—'; if (km < 1) return `${Math.round(km * 1000)} m`; return `${km.toFixed(1)} km`; };
-export const formatTime = (iso) => { if (!iso) return '—'; try { return new Date(iso).toLocaleString(); } catch { return iso; } };
-export const timeAgo = (iso) => { if (!iso) return '—'; try { const d = Date.now() - new Date(iso).getTime(); const m = Math.floor(d/60000), h = Math.floor(d/3600000), dd = Math.floor(d/86400000); if (dd>0) return `${dd}d ago`; if (h>0) return `${h}h ago`; if (m>0) return `${m}m ago`; return 'just now'; } catch { return '—'; } };
+export const formatDistance = (km) => { if (km == null || isNaN(km)) return '???'; if (km < 1) return `${Math.round(km * 1000)} m`; return `${km.toFixed(1)} km`; };
+export const formatTime = (iso) => { if (!iso) return '???'; try { return new Date(iso).toLocaleString(); } catch { return iso; } };
+export const timeAgo = (iso) => { if (!iso) return '???'; try { const d = Date.now() - new Date(iso).getTime(); const m = Math.floor(d/60000), h = Math.floor(d/3600000), dd = Math.floor(d/86400000); if (dd>0) return `${dd}d ago`; if (h>0) return `${h}h ago`; if (m>0) return `${m}m ago`; return 'just now'; } catch { return '???'; } };
 export const haversineKm = (lat1, lon1, lat2, lon2) => { const R=6371; const dLat=((lat2-lat1)*Math.PI)/180; const dLon=((lon2-lon1)*Math.PI)/180; const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2; return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); };
 export const disasterLabel = (type) => DISASTER_TYPES.find((d) => d.value === type)?.label || type || 'Unknown';
-export const estimateTravelTime = (km) => { if (km == null || isNaN(km)) return '—'; const mins = Math.max(1, Math.round(km*6)); if (mins<60) return `${mins} min`; return `${(mins/60).toFixed(1)} h`; };
+export const estimateTravelTime = (km) => { if (km == null || isNaN(km)) return '???'; const mins = Math.max(1, Math.round(km*6)); if (mins<60) return `${mins} min`; return `${(mins/60).toFixed(1)} h`; };
 export const severityRank = (severity) => ({ CRITICAL: 4, HIGH_RISK: 3, CONFIRMED: 2, LOW_CONFIDENCE: 1 }[severity] || 0);
 
 export const CHANNEL_LABELS = { APP: 'App', SMS: 'SMS', VOICE: 'Voice', GATEWAY: 'Hardware Gateway' };

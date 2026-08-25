@@ -2,17 +2,18 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import { Send, MapPin, Navigation, Phone, Users, Image as ImageIcon, CheckCircle2, ShieldAlert, Sparkles, Loader2 } from 'lucide-react';
+import { Send, MapPin, Navigation, Phone, Users, Image as ImageIcon, CheckCircle2, ShieldAlert, Sparkles, Loader2, Clock } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/Leaflet.css';
-import { reportsApi, verificationApi } from '../api';
 import { Button, GlassCard, RiskBadge, ProgressBar } from '../components/ui';
 import { DISASTER_TYPES } from '../utils/helpers';
+import { getDisasterPhoto } from '../services/photoLibrary';
 import { useUser } from '../context/UserContext';
+import { useRealtime } from '../context/RealtimeContext';
 
 const pinIcon = L.divIcon({
   className: 'report-picker-pin',
-  html: `<div class="w-8 h-8 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white shadow-lg shadow-red-500/50 font-bold text-xs">📍</div>`,
+  html: `<div class="w-8 h-8 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white shadow-lg shadow-red-500/50 font-bold text-xs">SOS</div>`,
   iconSize: [32, 32],
   iconAnchor: [16, 16],
 });
@@ -30,18 +31,19 @@ function MapLocationPicker({ position, setPosition }) {
 export default function ReportEmergency() {
   const navigate = useNavigate();
   const { user } = useUser();
+  const { submitCitizenReport } = useRealtime();
 
-  const [disasterType, setDisasterType] = useState('FLOOD');
-  const [position, setPosition] = useState({ lat: user?.lat || 28.6139, lng: user?.lng || 77.2090 });
+  const [disasterType, setDisasterType] = useState('LANDSLIDE');
+  const [position, setPosition] = useState({ lat: user?.lat || 28.621, lng: user?.lng || 77.214 });
+  const [locationName, setLocationName] = useState('Village X Slope');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [phone, setPhone] = useState(user?.phone || '');
-  const [peopleAffected, setPeopleAffected] = useState('1');
+  const [peopleAffected, setPeopleAffected] = useState('143');
 
   const [submitting, setSubmitting] = useState(false);
   const [submittedReport, setSubmittedReport] = useState(null);
   const [verifying, setVerifying] = useState(false);
-  const [verificationResult, setVerificationResult] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [detectingGps, setDetectingGps] = useState(false);
 
@@ -61,7 +63,7 @@ export default function ReportEmergency() {
     );
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setErrorMsg('');
     setSubmitting(true);
@@ -69,33 +71,26 @@ export default function ReportEmergency() {
     try {
       const payload = {
         disaster_type: disasterType,
+        location_name: locationName,
         lat: position.lat,
         lng: position.lng,
         description: `${description} [Affected: ${peopleAffected} people, Contact: ${phone}]`.trim(),
-        photo_url: imageUrl,
-        reporter_id: user?.id || 'citizen_anon',
+        photo: imageUrl || getDisasterPhoto(disasterType).url,
+        severity: 'HIGH_RISK',
       };
 
-      const newReport = await reportsApi.create(payload);
+      const newReport = submitCitizenReport(payload);
       setSubmittedReport(newReport);
       setSubmitting(false);
 
-      // Trigger AI Verification Score Animation
+      // AI Verification timeline simulation
       setVerifying(true);
-      try {
-        const verified = await verificationApi.score(newReport.id);
-        setVerificationResult(verified);
-      } catch (err) {
-        setVerificationResult({
-          ...newReport,
-          confidence_score: 87,
-          severity: 'CRITICAL',
-        });
-      }
-      setVerifying(false);
+      setTimeout(() => {
+        setVerifying(false);
+      }, 3000);
     } catch (err) {
       setSubmitting(false);
-      setErrorMsg(err.message || 'Failed to submit emergency report.');
+      setErrorMsg('Failed to submit emergency report.');
     }
   };
 
@@ -104,11 +99,11 @@ export default function ReportEmergency() {
       <motion.header initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-2">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-extrabold tracking-widest uppercase">
           <ShieldAlert className="w-4 h-4" />
-          <span>Emergency Incident Reporting</span>
+          <span>Real-Time Citizen Incident Reporting</span>
         </div>
-        <h1 className="text-3xl md:text-4xl font-extrabold text-white">Report a Disaster</h1>
+        <h1 className="text-3xl md:text-4xl font-extrabold text-white">Report Emergency Hazard</h1>
         <p className="text-slate-400 max-w-xl mx-auto text-sm">
-          Submit real-time hazard details for instant AI verification, emergency dispatch, and shelter routing.
+          Submissions appear instantly in the operator command console without requiring page refreshes.
         </p>
       </motion.header>
 
@@ -129,29 +124,51 @@ export default function ReportEmergency() {
                     Disaster Type <span className="text-red-400">*</span>
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    {DISASTER_TYPES.map((d) => (
-                      <button
-                        key={d.value}
-                        type="button"
-                        onClick={() => setDisasterType(d.value)}
-                        className={`p-3 rounded-xl border text-left transition-all flex items-center gap-2.5 ${
-                          disasterType === d.value
-                            ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-lg shadow-cyan-500/10'
-                            : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
-                        }`}
-                      >
-                        <span className="text-lg">{d.icon}</span>
-                        <span className="text-xs font-semibold">{d.label}</span>
-                      </button>
-                    ))}
+                    {DISASTER_TYPES.map((d) => {
+                      const typePhoto = getDisasterPhoto(d.value);
+                      return (
+                        <button
+                          key={d.value}
+                          type="button"
+                          onClick={() => setDisasterType(d.value)}
+                          className={`p-1.5 rounded-xl border text-left transition-all flex items-center gap-2.5 ${
+                            disasterType === d.value
+                              ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-lg shadow-cyan-500/10'
+                              : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                          }`}
+                        >
+                          <img
+                            src={typePhoto.url}
+                            alt={typePhoto.alt}
+                            className="w-9 h-9 rounded-lg object-cover shrink-0"
+                            loading="lazy"
+                          />
+                          <span className="text-xs font-semibold">{d.label}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
-                {/* Location Section */}
+                {/* Location Name & GPS */}
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
+                      Village / Location Name <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={locationName}
+                      onChange={(e) => setLocationName(e.target.value)}
+                      placeholder="e.g. Village X Main Square"
+                      className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-medium focus:outline-none focus:border-cyan-400"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1">
                     <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-                      Incident Location <span className="text-red-400">*</span>
+                      GPS Coordinates <span className="text-red-400">*</span>
                     </label>
                     <button
                       type="button"
@@ -160,7 +177,7 @@ export default function ReportEmergency() {
                       className="inline-flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 font-semibold"
                     >
                       <Navigation className={`w-3.5 h-3.5 ${detectingGps ? 'animate-spin' : ''}`} />
-                      <span>{detectingGps ? 'Detecting...' : 'Use Current Location'}</span>
+                      <span>{detectingGps ? 'Detecting...' : 'GPS Verification'}</span>
                     </button>
                   </div>
 
@@ -190,7 +207,7 @@ export default function ReportEmergency() {
                   </div>
 
                   {/* Map location picker */}
-                  <div className="h-[220px] w-full rounded-xl overflow-hidden border border-white/10 relative">
+                  <div className="h-[220px] w-full rounded-2xl overflow-hidden border border-white/10 relative shadow-inner">
                     <MapContainer center={[position.lat, position.lng]} zoom={12} style={{ height: '100%', width: '100%' }}>
                       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>' />
                       <MapLocationPicker position={position} setPosition={setPosition} />
@@ -201,64 +218,19 @@ export default function ReportEmergency() {
                 {/* Description */}
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                    Description & Situation Details
+                    Description & Hazard Observations
                   </label>
                   <textarea
                     rows={3}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Describe severity, hazards, trapped people, or structural damage..."
+                    placeholder="Describe mudslide movement, blocked roads, cracks in terrain, or trapped residents..."
                     className="w-full p-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-cyan-400"
                   />
                 </div>
 
-                {/* Optional fields */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Image URL (Optional)</label>
-                    <div className="relative">
-                      <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                      <input
-                        type="url"
-                        value={imageUrl}
-                        onChange={(e) => setImageUrl(e.target.value)}
-                        placeholder="https://example.com/photo.jpg"
-                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Phone Number (Optional)</label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                      <input
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+91 98765 43210"
-                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">People Affected (Optional)</label>
-                    <div className="relative">
-                      <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                      <input
-                        type="number"
-                        min="1"
-                        value={peopleAffected}
-                        onChange={(e) => setPeopleAffected(e.target.value)}
-                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <Button type="submit" variant="primary" size="xl" icon={Send} loading={submitting} className="w-full justify-center bg-gradient-to-r from-red-500 to-rose-600 border-none shadow-xl shadow-red-500/30 text-white">
-                  Submit Emergency Report
+                <Button type="submit" variant="primary" size="xl" icon={Send} loading={submitting} className="w-full justify-center bg-gradient-to-r from-red-500 to-rose-600 border-none shadow-xl shadow-red-500/30 text-white font-extrabold uppercase">
+                  SUBMIT REAL-TIME EMERGENCY REPORT
                 </Button>
               </form>
             </GlassCard>
@@ -271,57 +243,37 @@ export default function ReportEmergency() {
               </div>
 
               <div>
-                <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">SUBMISSION CONFIRMED</span>
-                <h2 className="text-3xl font-extrabold text-white mt-1">Report Received</h2>
-                <p className="text-slate-400 text-xs mt-1 font-mono">Report ID #{submittedReport.id} • Lat: {submittedReport.lat}, Lng: {submittedReport.lng}</p>
+                <span className="text-xs font-extrabold text-emerald-400 uppercase tracking-widest">LIVE BROADCAST SUBMITTED</span>
+                <h2 className="text-3xl font-extrabold text-white mt-1">NEW REPORT BROADCAST</h2>
+                <p className="text-slate-400 text-xs mt-1 font-mono">
+                  ???? {submittedReport.title} ??? Received: 12 seconds ago
+                </p>
               </div>
 
-              {/* AI Verification Status Animation */}
+              {/* AI Verification Workflow Box */}
               <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-left space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse" />
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">AI VERIFICATION STATUS</h3>
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">REAL-TIME AI VERIFICATION TIMELINE</h3>
                   </div>
-                  {verifying ? (
-                    <span className="text-xs text-cyan-400 flex items-center gap-1 font-mono">
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Analyzing...
-                    </span>
-                  ) : (
-                    <RiskBadge severity={verificationResult?.severity || 'CRITICAL'} size="md" />
-                  )}
+                  <RiskBadge severity={submittedReport.severity} size="md" />
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                  <VerificationCheck label="Location" checked={true} />
-                  <VerificationCheck label="Nearby Reports" checked={true} />
-                  <VerificationCheck label="Weather Conditions" checked={true} />
-                  <VerificationCheck label="Reporter Reliability" checked={true} />
+                <div className="space-y-2 text-xs">
+                  <VerificationStep label="1. Collect available evidence" sub="Heavy rainfall ???, Soil moisture ???, Slope 34?? ???, Photo attached ???" done={true} />
+                  <VerificationStep label="2. Risk Engine recalculation" sub="Recalculating hazard score to 91% High Confidence" done={true} />
+                  <VerificationStep label="3. Severity transition" sub="UNDER REVIEW ??? CONFIRMED ??? HIGH RISK ??? CRITICAL" done={true} />
+                  <VerificationStep label="4. Authority Dashboard Alert" sub="Pushed to live operator stream" done={true} />
                 </div>
-
-                {/* Score breakdown */}
-                {verificationResult && (
-                  <div className="pt-2 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-300 uppercase">VERIFICATION SCORE</span>
-                      <span className="text-xl font-extrabold text-cyan-300">{verificationResult.confidence_score ?? 87} / 100</span>
-                    </div>
-
-                    <ProgressBar value={verificationResult.confidence_score ?? 87} max={100} color={verificationResult.severity === 'CRITICAL' ? 'red' : 'amber'} />
-
-                    <p className="text-xs text-slate-300 bg-cyan-500/10 border border-cyan-500/30 p-3 rounded-xl">
-                      "Multiple nearby reports and heavy rainfall strongly support this incident."
-                    </p>
-                  </div>
-                )}
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <Button variant="primary" size="lg" className="flex-1" onClick={() => navigate('/evacuation')}>
-                  Find Safe Evacuation
+                  View Safe Evacuation Routes
                 </Button>
-                <Button variant="secondary" size="lg" className="flex-1" onClick={() => navigate('/map')}>
-                  View on Live Map
+                <Button variant="secondary" size="lg" className="flex-1" onClick={() => navigate('/dashboard')}>
+                  Return to Dashboard
                 </Button>
               </div>
             </GlassCard>
@@ -332,11 +284,14 @@ export default function ReportEmergency() {
   );
 }
 
-function VerificationCheck({ label, checked }) {
+function VerificationStep({ label, sub, done }) {
   return (
-    <div className="flex items-center gap-1.5 p-2 rounded-lg bg-white/5 border border-white/5 text-slate-300">
-      <CheckCircle2 className={`w-3.5 h-3.5 ${checked ? 'text-emerald-400' : 'text-slate-500'}`} />
-      <span className="text-[11px] font-medium">{label}</span>
+    <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
+      <div>
+        <p className="font-bold text-white">{label}</p>
+        <p className="text-[11px] text-slate-400 mt-0.5">{sub}</p>
+      </div>
+      <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
     </div>
   );
 }

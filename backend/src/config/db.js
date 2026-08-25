@@ -164,6 +164,42 @@ const init = async () => {
     // Column already exists
   }
 
+  // Ensure users.location column exists (citizen registered location name)
+  const userColumnsResult = database.exec('PRAGMA table_info(users)');
+  const userColumns = new Set((userColumnsResult[0]?.values || []).map(row => row[1]));
+  if (!userColumns.has('location')) {
+    try {
+      database.run('ALTER TABLE users ADD COLUMN location TEXT');
+      persist();
+    } catch (e) {
+      // Column already exists
+    }
+  }
+
+  // Emergency category columns for reports (NORMAL / HIGH / RISK / CRITICAL)
+  const reportEmergencyColumns = [
+    ['category', "TEXT DEFAULT 'NORMAL'"],
+    ['news_published', 'INTEGER DEFAULT 0'],
+    ['distinct_reporters', 'INTEGER DEFAULT 1'],
+    ['photo_verified', 'INTEGER DEFAULT 0']
+  ];
+
+  const existingReportColumnsResult = database.exec('PRAGMA table_info(reports)');
+  const existingReportColumns = new Set(
+    (existingReportColumnsResult[0]?.values || []).map(row => row[1])
+  );
+
+  for (const [columnName, columnDefinition] of reportEmergencyColumns) {
+    if (!existingReportColumns.has(columnName)) {
+      try {
+        database.run(`ALTER TABLE reports ADD COLUMN ${columnName} ${columnDefinition}`);
+        persist();
+      } catch (e) {
+        // Column already exists
+      }
+    }
+  }
+
   // Clear legacy mock users if present
   try {
     database.run("DELETE FROM users WHERE id = 'u1' OR id = 'u2' OR id = 'u3' OR id = 'u4' OR id = 'u5' OR id = 'u6'");

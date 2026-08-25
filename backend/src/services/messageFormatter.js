@@ -5,7 +5,7 @@ export const buildAlertMessage = (report, severity) => {
   const time = report.timestamp ? new Date(report.timestamp).toLocaleString() : new Date().toLocaleString();
   const location = `(${report.lat}, ${report.lng})`;
 
-  return `DISASTER ALERT [${riskLevel}] — ${disasterLabel} at ${location}. Issue: ${issue}. Time: ${time}. Immediate action required.`;
+  return `DISASTER ALERT [${riskLevel}] ??? ${disasterLabel} at ${location}. Issue: ${issue}. Time: ${time}. Immediate action required.`;
 };
 
 export const formatAlertForVoice = (message) => {

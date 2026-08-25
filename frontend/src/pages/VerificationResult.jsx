@@ -79,7 +79,7 @@ export default function VerificationResult() {
   const nearbyPts = nearbyCount >= 5 ? 30 : nearbyCount >= 2 ? 15 : 0;
   const rainfallPts = rainfall >= 50 ? 40 : rainfall >= 20 ? 20 : 0;
 
-  if (loading) return <Loader text="Running AI verification…" />;
+  if (loading) return <Loader text="Running AI verification???" />;
   if (error) return <ErrorState error={error} onRetry={() => { window.location.reload(); }} />;
   if (!report) return <EmptyState title="No verification data" icon={Shield} />;
 
@@ -88,7 +88,7 @@ export default function VerificationResult() {
       <motion.header initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white">AI Verification Result</h1>
-          <p className="text-slate-400 mt-1">Report #{report.id} — {disasterLabel(report.disaster_type)}</p>
+          <p className="text-slate-400 mt-1">Report #{report.id} ??? {disasterLabel(report.disaster_type)}</p>
         </div>
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
           Back

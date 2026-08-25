@@ -124,7 +124,7 @@ export default function AIVerificationCenter() {
                   <ScoringFactor
                     icon={CloudRain}
                     title="Rainfall Accumulation"
-                    rule=">= 50 mm (+40 pts) | 20–50 mm (+20 pts)"
+                    rule=">= 50 mm (+40 pts) | 20???50 mm (+20 pts)"
                     points={selectedReport.confidence_score >= 81 ? 40 : 20}
                     maxPoints={40}
                     color="cyan"
@@ -133,7 +133,7 @@ export default function AIVerificationCenter() {
                   <ScoringFactor
                     icon={Users}
                     title="Nearby Reports Cluster"
-                    rule=">= 5 within 2 km (+30 pts) | 2–4 (+15 pts)"
+                    rule=">= 5 within 2 km (+30 pts) | 2???4 (+15 pts)"
                     points={selectedReport.confidence_score >= 61 ? 30 : 15}
                     maxPoints={30}
                     color="amber"
@@ -162,8 +162,8 @@ export default function AIVerificationCenter() {
                   <span className="font-bold">Status Verdict: </span>
                   <span>
                     {selectedReport.severity === 'CRITICAL'
-                      ? 'CRITICAL INCIDENT — Multi-channel emergency alert dispatch triggered.'
-                      : 'CONFIRMED INCIDENT — High confidence hazard verified by AI engine.'}
+                      ? 'CRITICAL INCIDENT ??? Multi-channel emergency alert dispatch triggered.'
+                      : 'CONFIRMED INCIDENT ??? High confidence hazard verified by AI engine.'}
                   </span>
                 </div>
               </GlassCard>

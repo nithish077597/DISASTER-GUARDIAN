@@ -3,7 +3,7 @@ import axios from 'axios';
 const GATEWAY_URL = process.env.GATEWAY_URL || 'http://localhost:6000';
 
 export const sendAlert = async (channels, report, message, recipients = []) => {
-  const result = { sms: null, voice: null, gateway: null, push: null };
+  const result = { app: null, sms: null, voice: null, voicemail: null, call: null, gateway: null, push: null };
 
   for (const channel of channels) {
     if (channel === 'APP') {
@@ -30,6 +30,52 @@ export const sendAlert = async (channels, report, message, recipients = []) => {
         }
       }
       result.sms = { status: 'sent', recipients: sentTo };
+    }
+    if (channel === 'VOICEMAIL') {
+      const mailedTo = [];
+      for (const recipient of recipients) {
+        if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+          try {
+            const twilio = (await import('twilio')).default;
+            const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+            // Voicemail detection: leave message after greeting
+            const call = await client.calls.create({
+              twiml: `<Response><Pause length="3"/><Say>${message}</Say></Response>`,
+              from: process.env.TWILIO_PHONE_NUMBER,
+              to: recipient.phone,
+              machineDetection: 'DetectMessageEnd',
+            });
+            mailedTo.push({ to: recipient.phone, sid: call.sid, status: 'voicemail_left' });
+          } catch (err) {
+            console.error('Twilio Voicemail failed', err.message);
+            mailedTo.push({ to: recipient.phone, status: 'failed', reason: err.message });
+          }
+        } else {
+          console.log(`[VOICE MAIL LEFT] To: ${recipient.phone} | ${message}`);
+          mailedTo.push({ to: recipient.phone, status: 'mock_sent' });
+        }
+      }
+      result.voicemail = { status: 'sent', recipients: mailedTo };
+    }
+    if (channel === 'CALL') {
+      const calledTo = [];
+      for (const recipient of recipients) {
+        if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+          try {
+            const twilio = (await import('twilio')).default;
+            const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+            const call = await client.calls.create({ twiml: `<Response><Say voice="Polly.Aditi" loop="2">${message}</Say></Response>`, from: process.env.TWILIO_PHONE_NUMBER, to: recipient.phone });
+            calledTo.push({ to: recipient.phone, sid: call.sid, status: call.status });
+          } catch (err) {
+            console.error('Twilio Call failed', err.message);
+            calledTo.push({ to: recipient.phone, status: 'failed', reason: err.message });
+          }
+        } else {
+          console.log(`[EMERGENCY CALL PLACED] To: ${recipient.phone} | ${message}`);
+          calledTo.push({ to: recipient.phone, status: 'mock_initiated' });
+        }
+      }
+      result.call = { status: 'sent', recipients: calledTo };
     }
     if (channel === 'VOICE') {
       const calledTo = [];

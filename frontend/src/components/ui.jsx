@@ -168,7 +168,7 @@ export const AnimatedCounter = ({ value, duration = 1.5, suffix = '', prefix = '
   );
 };
 
-export const Loader = ({ text = 'Loading data…', size = 'lg' }) => (
+export const Loader = ({ text = 'Loading data???', size = 'lg' }) => (
   <div className="flex flex-col items-center justify-center gap-4 py-12 text-slate-400">
     <div className="relative">
       <motion.div
@@ -233,7 +233,7 @@ export const AlertBanner = ({ type = 'info', title, message, onClose, action }) 
         {action}
         {onClose && (
           <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/5 text-slate-400 hover:text-slate-200">
-            ✕
+            ???
           </button>
         )}
       </div>

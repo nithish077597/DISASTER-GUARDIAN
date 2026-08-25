@@ -1,18 +1,18 @@
 export const DISASTER_TYPES = [
-  { value: 'FLOOD', label: 'Flood', color: '#3b82f6', icon: '🌊' },
-  { value: 'FIRE', label: 'Fire', color: '#ef4444', icon: '🔥' },
-  { value: 'LANDSLIDE', label: 'Landslide', color: '#a8a29e', icon: '⛰️' },
-  { value: 'CYCLONE', label: 'Cyclone', color: '#8b5cf6', icon: '🌀' },
-  { value: 'EARTHQUAKE', label: 'Earthquake', color: '#f59e0b', icon: '🌍' },
-  { value: 'ACCIDENT', label: 'Accident', color: '#f97316', icon: '🚒' },
-  { value: 'OTHER', label: 'Other', color: '#94a3b8', icon: '⚠️' },
+  { value: 'FLOOD', label: 'Flood', color: '#3b82f6', icon: '????' },
+  { value: 'FIRE', label: 'Fire', color: '#ef4444', icon: '????' },
+  { value: 'LANDSLIDE', label: 'Landslide', color: '#a8a29e', icon: '??????' },
+  { value: 'CYCLONE', label: 'Cyclone', color: '#8b5cf6', icon: '????' },
+  { value: 'EARTHQUAKE', label: 'Earthquake', color: '#f59e0b', icon: '????' },
+  { value: 'ACCIDENT', label: 'Accident', color: '#f97316', icon: '????' },
+  { value: 'OTHER', label: 'Other', color: '#94a3b8', icon: '??????' },
 ];
 
 export const SEVERITY = {
-  LOW_CONFIDENCE: { label: 'Low Confidence', color: '#3b82f6', colorClass: 'bg-blue-500', dot: '🔵' },
-  CONFIRMED: { label: 'Confirmed', color: '#eab308', colorClass: 'bg-yellow-500', dot: '🟡' },
-  HIGH_RISK: { label: 'High Risk', color: '#f97316', colorClass: 'bg-orange-500', dot: '🟠' },
-  CRITICAL: { label: 'Critical', color: '#ef4444', colorClass: 'bg-red-500', dot: '🔴' },
+  LOW_CONFIDENCE: { label: 'Low Confidence', color: '#3b82f6', colorClass: 'bg-blue-500', dot: '????' },
+  CONFIRMED: { label: 'Confirmed', color: '#eab308', colorClass: 'bg-yellow-500', dot: '????' },
+  HIGH_RISK: { label: 'High Risk', color: '#f97316', colorClass: 'bg-orange-500', dot: '????' },
+  CRITICAL: { label: 'Critical', color: '#ef4444', colorClass: 'bg-red-500', dot: '????' },
 };
 
 export const getSeverityInfo = (severity) => SEVERITY[severity] || SEVERITY.LOW_CONFIDENCE;
@@ -35,13 +35,13 @@ export const getSafetyStatus = (reports) => {
 };
 
 export const formatDistance = (km) => {
-  if (km == null || isNaN(km)) return '—';
+  if (km == null || isNaN(km)) return '???';
   if (km < 1) return `${Math.round(km * 1000)} m`;
   return `${km.toFixed(1)} km`;
 };
 
 export const formatTime = (iso) => {
-  if (!iso) return '—';
+  if (!iso) return '???';
   try {
     return new Date(iso).toLocaleString();
   } catch {
@@ -50,7 +50,7 @@ export const formatTime = (iso) => {
 };
 
 export const timeAgo = (iso) => {
-  if (!iso) return '—';
+  if (!iso) return '???';
   try {
     const diff = Date.now() - new Date(iso).getTime();
     const m = Math.floor(diff / 60000);
@@ -61,7 +61,7 @@ export const timeAgo = (iso) => {
     if (m > 0) return `${m}m ago`;
     return 'just now';
   } catch {
-    return '—';
+    return '???';
   }
 };
 
@@ -88,7 +88,7 @@ export const nearestLocation = (locations, lat, lng) => {
 export const disasterLabel = (type) => DISASTER_TYPES.find((d) => d.value === type)?.label || type || 'Unknown';
 
 export const estimateTravelTime = (distanceKm) => {
-  if (distanceKm == null || isNaN(distanceKm)) return '—';
+  if (distanceKm == null || isNaN(distanceKm)) return '???';
   const mins = Math.max(1, Math.round(distanceKm * 6));
   if (mins < 60) return `${mins} min`;
   return `${(mins / 60).toFixed(1)} h`;

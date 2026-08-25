@@ -141,7 +141,7 @@ function AdminReportCard({ report, onClose }) {
       <GlassCard className="p-5 border border-white/10 bg-slate-900/95 shadow-2xl">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-white">{disasterLabel(report.disaster_type)} - Report #{report.id}</h3>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 text-slate-400">✕</button>
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 text-slate-400">???</button>
         </div>
         <div className="space-y-2.5 text-sm">
           <RiskBadge severity={report.severity} />
@@ -164,7 +164,7 @@ function AdminUserCard({ user, onClose }) {
             <User className="w-5 h-5 text-cyan-400" />
             <h3 className="text-base font-semibold text-white">{user.name}</h3>
           </div>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 text-slate-400">✕</button>
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 text-slate-400">???</button>
         </div>
         <div className="space-y-2 text-sm">
           {user.phone && <p className="text-slate-300">Phone: <span className="text-slate-100 font-mono">{user.phone}</span></p>}

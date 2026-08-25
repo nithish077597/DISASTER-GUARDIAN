@@ -51,6 +51,13 @@ export const alertsApi = {
   create: (payload) => api.post('/api/alerts', payload).then((r) => r.data),
 };
 
+export const newsApi = {
+  live: (lat, lng, radiusKm = 100) =>
+    api
+      .get('/api/news', { params: { ...(lat != null && { lat }), ...(lng != null && { lng }), radius_km: radiusKm } })
+      .then((r) => r.data),
+};
+
 export const usersApi = {
   list: () => api.get('/api/users').then((r) => r.data),
   login: (payload) => api.post('/api/users/login', payload).then((r) => r.data),

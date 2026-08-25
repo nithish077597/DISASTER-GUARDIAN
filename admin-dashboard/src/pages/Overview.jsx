@@ -74,7 +74,7 @@ export default function Overview() {
 
       <GlassCard className="p-6 border border-white/10">
         <h3 className="text-sm font-medium text-slate-300 uppercase tracking-wider mb-4">Recent Critical Incidents</h3>
-        {rLoading ? <Loader text="Loading incidents…" /> : stats.criticalReports.length === 0 ? (
+        {rLoading ? <Loader text="Loading incidents???" /> : stats.criticalReports.length === 0 ? (
           <EmptyState title="No critical incidents" description="All systems nominal." icon={AlertTriangle} />
         ) : (
           <div className="space-y-3">
@@ -83,8 +83,8 @@ export default function Overview() {
                 <div className="flex items-center gap-3">
                   <RiskBadge severity={r.severity} />
                   <div>
-                    <p className="font-medium text-white">{disasterLabel(r.disaster_type)} • Report #{r.id}</p>
-                    <p className="text-xs text-slate-400">{r.lat.toFixed(3)}, {r.lng.toFixed(3)} · {timeAgo(r.timestamp)}</p>
+                    <p className="font-medium text-white">{disasterLabel(r.disaster_type)} ??? Report #{r.id}</p>
+                    <p className="text-xs text-slate-400">{r.lat.toFixed(3)}, {r.lng.toFixed(3)} ?? {timeAgo(r.timestamp)}</p>
                   </div>
                 </div>
                 <div className="text-right">

@@ -51,13 +51,6 @@ const MOCK_HERO_ZONES = [
   { center: { lat: 28.6450, lng: 77.1800 }, radius_m: 1800, severity: 'HIGH_RISK' },
 ];
 
-const colorMap = {
-  cyan: 'from-cyan-500 to-blue-500',
-  amber: 'from-amber-400 to-orange-500',
-  emerald: 'from-emerald-400 to-green-500',
-  red: 'from-red-500 to-rose-500',
-};
-
 export default function Home() {
   const { user, isLoggedIn } = useUser();
   const navigate = useNavigate();
@@ -84,7 +77,7 @@ function HeroSection({ user, isLoggedIn, navigate }) {
       {/* Top Badge */}
       <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/40 mb-6 shadow-lg shadow-cyan-500/10">
         <Shield className="w-4 h-4 text-cyan-400" />
-        <span className="text-xs font-extrabold text-cyan-300 tracking-widest uppercase">DISASTER GUARDIAN • HACKATHON PLATFORM</span>
+        <span className="text-xs font-extrabold text-cyan-300 tracking-widest uppercase">REAL-TIME DISASTER MANAGEMENT & EMERGENCY RESPONSE SYSTEM</span>
       </motion.div>
 
       {/* Main Headline */}
@@ -100,7 +93,7 @@ function HeroSection({ user, isLoggedIn, navigate }) {
 
       {/* Tagline */}
       <motion.p variants={fadeUp} className="text-base md:text-lg text-cyan-400 font-semibold tracking-wider uppercase mb-8">
-        "Verify. Predict. Protect."
+        "Verify ??? Predict Risk ??? Warn ??? Guide ??? Evacuate"
       </motion.p>
 
       {/* Primary & Secondary CTAs */}
@@ -136,7 +129,7 @@ function HeroSection({ user, isLoggedIn, navigate }) {
           <MapContainer center={[28.6139, 77.2090]} zoom={11} style={{ height: '100%', width: '100%' }} zoomControl={false} scrollWheelZoom={false}>
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>' />
             {MOCK_HERO_ZONES.map((z, idx) => (
-              <DangerZoneCircle key={idx} zone={z} />
+              <DangerZoneCircle key={idx} center={z.center} radius_m={z.radius_m} />
             ))}
             {MOCK_HERO_REPORTS.map((r) => (
               <ReportMarker key={r.id} report={r} />

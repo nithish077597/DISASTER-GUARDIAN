@@ -11,7 +11,7 @@ College hackathon prototype. Verifies disaster reports, identifies people at ris
 - Weather: Open-Meteo API (free, no key)
 
 ## Quick Start
-1. Copy `.env.example` to `.env` and fill values (Twilio optional — mock mode works without it).
+1. Copy `.env.example` to `.env` and fill values (Twilio optional ??? mock mode works without it).
 2. `npm run install:all`
 3. `npm run dev`
 4. Backend runs on `http://localhost:5000`
@@ -21,12 +21,12 @@ College hackathon prototype. Verifies disaster reports, identifies people at ris
 ## Project Structure
 ```
 disaster-guardian/
-├── backend/          # API, verification, geo, alerts
-├── frontend/         # Citizen report app + map
-├── admin-dashboard/  # Admin/authority panel
-├── gateway/          # ESP32/Pi + alert routing simulation
-├── docs/             # README, architecture, API docs
-└── .env.example
+????????? backend/          # API, verification, geo, alerts
+????????? frontend/         # Citizen report app + map
+????????? admin-dashboard/  # Admin/authority panel
+????????? gateway/          # ESP32/Pi + alert routing simulation
+????????? docs/             # README, architecture, API docs
+????????? .env.example
 ```
 
 ## Modules & Owners
@@ -44,16 +44,16 @@ The verification engine fetches 24h rainfall from Open-Meteo and counts nearby r
 
 Weights:
 - Rainfall >= 50 mm in 24h: +40 points (heavy rain trigger)
-- Rainfall 20–50 mm: +20 points
+- Rainfall 20???50 mm: +20 points
 - Report count >= 5 within 2 km: +30 points
-- Report count 2–4 within 2 km: +15 points
+- Report count 2???4 within 2 km: +15 points
 - Reporter reliability mock score: +10 points max
 
 Score bands:
-- 0–30: LOW_CONFIDENCE
-- 31–60: CONFIRMED
-- 61–80: HIGH_RISK
-- 81–100: CRITICAL
+- 0???30: LOW_CONFIDENCE
+- 31???60: CONFIRMED
+- 61???80: HIGH_RISK
+- 81???100: CRITICAL
 
 ## Alert Routing
 - NORMAL: app notification log

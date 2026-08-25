@@ -62,7 +62,7 @@ export const AnimatedCounter = ({ value, duration = 1.5, suffix = '', prefix = '
   );
 };
 
-export const Loader = ({ text = 'Loading data…' }) => (
+export const Loader = ({ text = 'Loading data???' }) => (
   <div className="flex flex-col items-center justify-center gap-4 py-12 text-slate-400">
     <div className="relative">
       <motion.div className="w-10 h-10 border-3 border-cyan-500/30 border-t-cyan-400 rounded-full" animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }} />
@@ -102,7 +102,7 @@ export const StatCard = ({ icon: Icon, label, value, trend, color = 'cyan', load
         <span className="text-xs text-slate-400 uppercase tracking-wider">{label}</span>
       </div>
       {loading ? <div className="h-8 w-20 bg-white/5 rounded animate-pulse" /> : <AnimatedCounter value={value} className={`text-3xl font-bold ${colorMap[color]}`} />}
-      {trend && <p className={`text-xs ${trend > 0 ? 'text-emerald-400' : 'text-red-400'} mt-1`}>{trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%</p>}
+      {trend && <p className={`text-xs ${trend > 0 ? 'text-emerald-400' : 'text-red-400'} mt-1`}>{trend > 0 ? '???' : '???'} {Math.abs(trend)}%</p>}
     </GlassCard>
   );
 };

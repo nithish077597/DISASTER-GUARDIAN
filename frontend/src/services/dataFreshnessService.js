@@ -1,0 +1,56 @@
+export const dataFreshnessService = {
+  getFreshnessData() {
+    return [
+      {
+        id: 'weather',
+        name: 'Open-Meteo Weather API',
+        status: 'LIVE',
+        badge: '???? LIVE',
+        updated: '30s ago',
+        latency: '< 1 second',
+        quality: 'HIGH',
+        source: 'Open-Meteo Global Forecast',
+      },
+      {
+        id: 'nasa_gpm',
+        name: 'Precipitation Intelligence',
+        status: 'NEAR REAL-TIME',
+        badge: '???? NEAR REAL-TIME',
+        updated: '12 mins ago',
+        latency: '4 hours (Early Run)',
+        quality: 'SATELLITE ESTIMATE',
+        source: 'NASA GPM IMERG Satellite',
+      },
+      {
+        id: 'river_gauge',
+        name: 'River Water Level Sensors',
+        status: 'LIVE',
+        badge: '???? LIVE',
+        updated: '45s ago',
+        latency: '15 seconds',
+        quality: 'VERIFIED SENSOR',
+        source: 'Central Water Commission (CWC)',
+      },
+      {
+        id: 'ai_model',
+        name: 'AI Flood Risk Model',
+        status: 'SIMULATION',
+        badge: '???? SIMULATION / DEMO MODE',
+        updated: '1 min ago',
+        latency: '< 50ms',
+        quality: 'PREDICTIVE MODEL',
+        source: 'Trained ML Model Interface',
+      },
+      {
+        id: 'gps_geo',
+        name: 'Device Geolocation',
+        status: 'LIVE',
+        badge: '???? LIVE',
+        updated: 'Just now',
+        latency: 'Instant',
+        quality: 'Accuracy ??12m',
+        source: 'Browser W3C Geolocation API',
+      },
+    ];
+  },
+};

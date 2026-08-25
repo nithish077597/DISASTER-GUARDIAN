@@ -122,11 +122,11 @@ export default function AdminOverview() {
               <div key={r.id} className="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/5 hover:border-white/15 transition-all flex-wrap gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg">
-                    🚨
+                    ????
                   </div>
                   <div>
-                    <h4 className="font-bold text-white text-sm">{disasterLabel(r.disaster_type)} • Report #{r.id}</h4>
-                    <p className="text-xs text-slate-400 font-mono">{r.lat?.toFixed(3)}, {r.lng?.toFixed(3)} · {timeAgo(r.timestamp)}</p>
+                    <h4 className="font-bold text-white text-sm">{disasterLabel(r.disaster_type)} ??? Report #{r.id}</h4>
+                    <p className="text-xs text-slate-400 font-mono">{r.lat?.toFixed(3)}, {r.lng?.toFixed(3)} ?? {timeAgo(r.timestamp)}</p>
                   </div>
                 </div>
 
