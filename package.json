@@ -1,0 +1,14 @@
+{
+  "name": "disaster-guardian-root",
+  "version": "1.0.0",
+  "description": "AI-Powered Disaster Guardian workspace launcher",
+  "scripts": {
+    "dev": "cd DISASTER-GUARDIAN-main/DISASTER-GUARDIAN-main && npm run dev",
+    "dev:backend": "cd DISASTER-GUARDIAN-main/DISASTER-GUARDIAN-main && npm run dev:backend",
+    "dev:frontend": "cd DISASTER-GUARDIAN-main/DISASTER-GUARDIAN-main && npm run dev:frontend",
+    "dev:admin": "cd DISASTER-GUARDIAN-main/DISASTER-GUARDIAN-main && npm run dev:admin",
+    "dev:gateway": "cd DISASTER-GUARDIAN-main/DISASTER-GUARDIAN-main && npm run dev:gateway",
+    "install:all": "cd DISASTER-GUARDIAN-main/DISASTER-GUARDIAN-main && npm run install:all",
+    "build": "cd DISASTER-GUARDIAN-main/DISASTER-GUARDIAN-main/frontend && npm run build && cd ../admin-dashboard && npm run build"
+  }
+}
