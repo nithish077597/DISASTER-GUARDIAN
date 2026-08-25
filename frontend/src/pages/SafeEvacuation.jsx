@@ -87,7 +87,7 @@ export default function SafeEvacuation() {
           <div className="h-[520px] w-full rounded-3xl overflow-hidden border-2 border-white/10 relative shadow-2xl">
             <MapContainer center={[userPos.lat, userPos.lng]} zoom={12} style={{ height: '100%', width: '100%' }}>
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>' />
-              <FitToReports reports={shelters} userPos={userPos} />
+              <FitToReports points={shelters} userPos={userPos} />
 
               {/* Shelters */}
               {shelters.map((s) => (
@@ -95,7 +95,12 @@ export default function SafeEvacuation() {
               ))}
 
               {/* Danger Zone */}
-              <DangerZoneCircle zone={{ center: { lat: criticalIncident.lat, lng: criticalIncident.lng }, radius_m: 1500, severity: criticalIncident.severity }} />
+              {criticalIncident && Number.isFinite(criticalIncident.lat) && (
+                <DangerZoneCircle
+                  center={{ lat: criticalIncident.lat, lng: criticalIncident.lng }}
+                  radius_m={1500}
+                />
+              )}
 
               {/* Road Segments */}
               {roadStatuses.map((r) => (
@@ -107,7 +112,7 @@ export default function SafeEvacuation() {
                 <EvacuationRoutePolyline from={userPos} to={{ lat: selectedShelter.lat, lng: selectedShelter.lng }} />
               )}
 
-              <UserLocationMarker lat={userPos.lat} lng={userPos.lng} />
+              <UserLocationMarker position={[userPos.lat, userPos.lng]} />
             </MapContainer>
           </div>
         </div>
