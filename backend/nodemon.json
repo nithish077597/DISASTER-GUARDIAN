@@ -1,0 +1,3 @@
+{
+  "ignore": ["*.db", "disaster_guardian.db", "node_modules", "dist"]
+}

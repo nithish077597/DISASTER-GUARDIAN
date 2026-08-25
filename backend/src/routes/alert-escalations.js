@@ -5,6 +5,14 @@ const router = express.Router();
 
 const rowToObj = (cols, row) => Object.fromEntries(cols.map((c, i) => [c, row[i]]));
 
+router.get('/', async (req, res) => {
+  const db = await getDb();
+  const result = db.exec('SELECT * FROM alert_escalations ORDER BY triggered_at DESC');
+  const cols = result[0]?.columns;
+  const escalations = (result[0]?.values || []).map(row => rowToObj(cols, row));
+  res.json(escalations);
+});
+
 router.get('/alert/:alertId', async (req, res) => {
   const db = await getDb();
   const result = db.exec(`SELECT * FROM alert_escalations WHERE alert_id = ${req.params.alertId} ORDER BY triggered_at DESC`);

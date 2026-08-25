@@ -1,6 +1,7 @@
 import express from 'express';
 import { getDb, persist } from '../config/db.js';
 import { evaluateAndDispatchReport } from '../services/emergencyService.js';
+import { triggerSosWorkflow } from '../services/sosService.js';
 
 const router = express.Router();
 
@@ -119,7 +120,49 @@ router.patch('/:id', async (req, res) => {
   const cols = result[0]?.columns;
   const row = result[0]?.values[0];
   const report = row ? rowToObj(cols, row) : {};
-  res.json(report);
+
+  // AUTO-TRIGGER: when a disaster reaches CRITICAL severity, identify citizens
+  // inside the danger zone and run the emergency alert/call workflow.
+  let sos = null;
+  if (severity && String(severity).toUpperCase() === 'CRITICAL') {
+    try {
+      sos = await triggerSosWorkflow({ reportId: req.params.id, severity: 'CRITICAL' });
+    } catch (err) {
+      sos = { error: err.message };
+    }
+  }
+
+  res.json({ ...report, sos });
+});
+
+router.post('/:id/escalate', async (req, res) => {
+  const db = await getDb();
+  const result = db.exec(`SELECT * FROM reports WHERE id = ${req.params.id}`);
+  if (!result[0]?.values[0]) return res.status(404).json({ error: 'Report not found' });
+  const cols = result[0]?.columns;
+  const row = result[0]?.values[0];
+  const report = rowToObj(cols, row);
+  const updated = { ...report, status: 'ESCALATED', severity: report.severity || 'HIGH_RISK' };
+  const stmt = db.prepare(`UPDATE reports SET status = ?, severity = ? WHERE id = ?`);
+  stmt.run([updated.status, updated.severity, req.params.id]);
+  stmt.free();
+  persist();
+  res.json(updated);
+});
+
+router.post('/:id/dismiss', async (req, res) => {
+  const db = await getDb();
+  const result = db.exec(`SELECT * FROM reports WHERE id = ${req.params.id}`);
+  if (!result[0]?.values[0]) return res.status(404).json({ error: 'Report not found' });
+  const cols = result[0]?.columns;
+  const row = result[0]?.values[0];
+  const report = rowToObj(cols, row);
+  const updated = { ...report, status: 'FALSE_REPORT' };
+  const stmt = db.prepare(`UPDATE reports SET status = ? WHERE id = ?`);
+  stmt.run([updated.status, req.params.id]);
+  stmt.free();
+  persist();
+  res.json(updated);
 });
 
 export default router;

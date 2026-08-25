@@ -32,6 +32,8 @@ export const reportsApi = {
   get: (id) => api.get(`/api/reports/${id}`).then((r) => r.data),
   create: (payload) => api.post('/api/reports', payload).then((r) => r.data),
   update: (id, payload) => api.patch(`/api/reports/${id}`, payload).then((r) => r.data),
+  escalate: (id) => api.post(`/api/reports/${id}/escalate`).then((r) => r.data),
+  dismiss: (id) => api.post(`/api/reports/${id}/dismiss`).then((r) => r.data),
 };
 
 export const verificationApi = {
@@ -56,6 +58,14 @@ export const newsApi = {
     api
       .get('/api/news', { params: { ...(lat != null && { lat }), ...(lng != null && { lng }), radius_km: radiusKm } })
       .then((r) => r.data),
+};
+
+export const sosApi = {
+  trigger: (payload) => api.post('/api/sos/trigger', payload).then((r) => r.data),
+  dangerZone: (lat, lng, radiusKm = 5) =>
+    api.get('/api/sos/danger-zone', { params: { lat, lng, radiusKm } }).then((r) => r.data),
+  events: () => api.get('/api/sos/events').then((r) => r.data),
+  affected: (eventId) => api.get(`/api/sos/events/${eventId}/affected`).then((r) => r.data),
 };
 
 export const usersApi = {

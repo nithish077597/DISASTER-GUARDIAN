@@ -6,3 +6,5 @@ build
 *.sqlite
 .DS_Store
 .vscode
+*.tar.gz
+-w

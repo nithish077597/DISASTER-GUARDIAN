@@ -27,7 +27,7 @@ export default function EmergencyPage() {
           <ShieldAlert className="w-9 h-9" />
         </div>
         <h1 className="text-3xl font-black uppercase text-red-500 tracking-tight">
-          ???? EMERGENCY SOS
+          🆘 EMERGENCY SOS
         </h1>
         <p className="text-xs text-slate-300 font-medium">
           Do not hesitate if you are in danger.

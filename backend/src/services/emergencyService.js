@@ -1,5 +1,6 @@
 import { getDb, persist } from '../config/db.js';
 import { sendAlert } from './alertService.js';
+import { triggerSosWorkflow } from './sosService.js';
 import axios from 'axios';
 
 /* =====================================================
@@ -217,6 +218,24 @@ export const evaluateAndDispatchReport = async (report) => {
     stmt.free();
     persist();
 
+    // When the evaluation reaches CRITICAL, also run the dedicated SOS
+    // workflow: identify danger-zone citizens and trigger emergency calls.
+    let sos = null;
+    if (category === 'CRITICAL') {
+      try {
+        sos = await triggerSosWorkflow({
+          reportId: report.id,
+          lat: report.lat,
+          lng: report.lng,
+          disasterType: report.disaster_type,
+          severity: 'CRITICAL',
+          source: 'REPORT_EVALUATION',
+        });
+      } catch (err) {
+        sos = { error: err.message };
+      }
+    }
+
     return {
       report_id: report.id,
       category,
@@ -227,6 +246,7 @@ export const evaluateAndDispatchReport = async (report) => {
       channels,
       message,
       dispatch,
+      sos,
     };
   } catch (error) {
     console.error('Emergency evaluation failed:', error.message);

@@ -1,7 +1,7 @@
 export const emergencyService = {
   formatEmergencyMessage(userLocation, lat = 28.618, lng = 77.208, disasterType = 'LANDSLIDE') {
     const timestamp = new Date().toLocaleString();
-    return `???? EMERGENCY SOS ALERT!\nLocation: ${userLocation} (${lat}, ${lng})\nDisaster: ${disasterType}\nTime: ${timestamp}\nUser needs immediate assistance. Please send emergency rescue team.`;
+    return `🆘 EMERGENCY SOS ALERT!\nLocation: ${userLocation} (${lat}, ${lng})\nDisaster: ${disasterType}\nTime: ${timestamp}\nUser needs immediate assistance. Please send emergency rescue team.`;
   },
 
   getEmergencyContacts() {

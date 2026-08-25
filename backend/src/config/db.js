@@ -110,6 +110,29 @@ const init = async () => {
       reason TEXT,
       FOREIGN KEY (alert_id) REFERENCES alerts(id)
     );
+    CREATE TABLE IF NOT EXISTS sos_events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      report_id INTEGER,
+      disaster_type TEXT NOT NULL,
+      lat REAL NOT NULL,
+      lng REAL NOT NULL,
+      radius_km REAL NOT NULL,
+      severity TEXT NOT NULL,
+      message TEXT NOT NULL,
+      triggered_at TEXT NOT NULL,
+      affected_count INTEGER DEFAULT 0,
+      source TEXT DEFAULT 'SYSTEM'
+    );
+    CREATE TABLE IF NOT EXISTS sos_affected_users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      sos_event_id INTEGER NOT NULL,
+      user_id TEXT,
+      name TEXT,
+      phone TEXT,
+      distance_km REAL,
+      channels TEXT,
+      FOREIGN KEY (sos_event_id) REFERENCES sos_events(id)
+    );
   `);
 
   // Add new emergency-case fields to existing reports table
@@ -206,6 +229,32 @@ const init = async () => {
     persist();
   } catch (err) {
     // Ignore error
+  }
+
+  // Seed demo citizens ONLY when the users table is empty, so the SOS
+  // danger-zone identification has real citizens to evaluate against.
+  try {
+    const userCountResult = database.exec('SELECT COUNT(*) as count FROM users');
+    const userCount = userCountResult[0]?.values[0]?.[0] || 0;
+    if (userCount === 0) {
+      const demoCitizens = [
+        ['c1', 28.620, 77.210, '+919876543210', 'Aarav Sharma', 'Sulur Sector 4'],
+        ['c2', 28.615, 77.205, '+919876543211', 'Priya Nair', 'Kallar Pass'],
+        ['c3', 28.612, 77.216, '+919876543212', 'Vikram Singh', 'Sulur Sector 4'],
+        ['c4', 28.625, 77.200, '+919876543213', 'Meera Reddy', 'Kallar Valley'],
+        ['c5', 28.640, 77.230, '+919876543214', 'Karthik Kumar', 'Upper Slope'],
+        ['c6', 28.700, 77.300, '+919999999999', 'Far Citizen', 'Outside Zone'],
+      ];
+      for (const c of demoCitizens) {
+        database.run(
+          'INSERT INTO users (id, lat, lng, phone, name, location) VALUES (?, ?, ?, ?, ?, ?)',
+          c
+        );
+      }
+      persist();
+    }
+  } catch (err) {
+    // Ignore seeding errors
   }
 };
 

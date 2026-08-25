@@ -14,7 +14,7 @@ export default function SettingsPage() {
           <p className="text-xs text-slate-400">Software-only telemetry integrations and official authority action records</p>
         </div>
         <span className="px-3 py-1 rounded-full bg-emerald-950 border border-emerald-600 text-emerald-400 font-mono font-bold text-xs">
-          ???? SOFTWARE SYSTEM OPERATIONAL
+          ✅ SOFTWARE SYSTEM OPERATIONAL
         </span>
       </div>
 

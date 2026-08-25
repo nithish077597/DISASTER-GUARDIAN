@@ -85,7 +85,7 @@ export default function LandingPage() {
               <User className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-white group-hover:text-red-400 uppercase">???? CITIZEN PORTAL</h2>
+              <h2 className="text-xl font-black text-white group-hover:text-red-400 uppercase">👤 CITIZEN PORTAL</h2>
               <p className="text-xs text-slate-300 mt-1 leading-relaxed">
                 Simple safety status, 30s disaster reporting, evacuation guidance, and emergency SOS assistance.
               </p>
@@ -104,7 +104,7 @@ export default function LandingPage() {
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-white group-hover:text-cyan-400 uppercase">??????? ADMIN CONTROL CENTER</h2>
+              <h2 className="text-xl font-black text-white group-hover:text-cyan-400 uppercase">🛡️ ADMIN CONTROL CENTER</h2>
               <p className="text-xs text-slate-300 mt-1 leading-relaxed">
                 Operations center for emergency authorities: photo report verification, AI risk engine, targeted SMS alerts, and road/shelter control.
               </p>

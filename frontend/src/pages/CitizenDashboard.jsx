@@ -25,11 +25,11 @@ import 'leaflet/dist/leaflet.css';
 
 const LANGUAGES = [
   { code: 'en', label: 'English' },
-  { code: 'ta', label: '???????????????' },
-  { code: 'hi', label: '??????????????????' },
-  { code: 'te', label: '??????????????????' },
-  { code: 'kn', label: '<ctrl42>???????????????' },
-  { code: 'ml', label: '??????????????????' },
+  { code: 'ta', label: 'தமிழ்' },
+  { code: 'hi', label: 'हिंदी' },
+  { code: 'te', label: 'తెలుగు' },
+  { code: 'kn', label: 'ಕನ್ನಡ' },
+  { code: 'ml', label: 'മലയാളം' },
 ];
 
 export default function CitizenDashboard() {
@@ -41,6 +41,8 @@ export default function CitizenDashboard() {
     playVoiceAlert,
     submitCitizenReport,
     eventStream,
+    setCriticalModalOpen,
+    pushEmergencyMessage,
   } = useRealtime();
 
   const [locationName, setLocationName] = useState('Sulur, Tamil Nadu');
@@ -108,6 +110,20 @@ export default function CitizenDashboard() {
         isOpen={sosModalOpen}
         onClose={() => setSosModalOpen(false)}
         userLocation={locationName}
+        lat={coords?.lat ?? 28.621}
+        lng={coords?.lng ?? 77.214}
+        userName={currentUser?.name}
+        userPhone={currentUser?.mobile}
+        onSosTriggered={(res) => {
+          pushEmergencyMessage({
+            category: 'CRITICAL',
+            title: 'CITIZEN SOS ACTIVATED',
+            message: res?.message || 'Emergency call workflow dispatched to danger zone.',
+            locationName: locationName,
+            channels: res?.channels || [],
+          });
+          setCriticalModalOpen(true);
+        }}
       />
 
       <QuickReportModal
@@ -150,7 +166,7 @@ export default function CitizenDashboard() {
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300">
             <MapPin className="w-3.5 h-3.5 text-red-400" />
-            <span>???? <strong>{locationName}</strong></span>
+            <span>📍 <strong>{locationName}</strong></span>
             <button onClick={fetchGpsLocation} className="hover:text-cyan-400" title="Update Location">
               <RefreshCw className={`w-3.5 h-3.5 ${locLoading ? 'animate-spin' : ''}`} />
             </button>
@@ -250,7 +266,7 @@ export default function CitizenDashboard() {
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <button onClick={handleStartSafeRoute} className="flex-1 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs md:text-sm uppercase tracking-wider shadow-lg flex items-center justify-center gap-2">
                   <Navigation className="w-5 h-5" />
-                  <span>[ ??????? GUIDE ME TO SAFETY ]</span>
+                  <span>[ 🧭 GUIDE ME TO SAFETY ]</span>
                 </button>
                 <button onClick={() => setGuidanceModalOpen(true)} className="py-3.5 px-6 rounded-2xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-extrabold text-xs uppercase border border-slate-700 flex items-center justify-center gap-2">
                   <HelpCircle className="w-4 h-4 text-cyan-400" />

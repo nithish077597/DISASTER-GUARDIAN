@@ -64,7 +64,7 @@ export default function Dashboard() {
             <span>SECRET KEY: DG-ADMIN-9942</span>
           </span>
           <span className="px-3 py-1 rounded-full bg-red-950 border border-red-600 text-red-400 font-mono font-bold text-xs">
-            ???? COMMAND OPERATIONAL
+            ✅ COMMAND OPERATIONAL
           </span>
         </div>
       </div>
@@ -94,7 +94,7 @@ export default function Dashboard() {
             <Sparkles className="w-6 h-6 text-purple-400 animate-pulse" />
             <div>
               <h2 className="font-black text-lg text-purple-300 uppercase tracking-tight">
-                ???? AI SECOND DETERMINATION PANEL
+                🤖 AI SECOND DETERMINATION PANEL
               </h2>
               <p className="text-xs text-slate-400">Multi-Source Weighted Evidence Correlation & Incident Intelligence</p>
             </div>
@@ -115,7 +115,7 @@ export default function Dashboard() {
             <div key={idx} className="p-3 rounded-2xl bg-slate-950 border border-slate-800 space-y-1">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-white text-[11px]">{e.label}</span>
-                <span className="text-purple-400 text-[10px]">Weight: {e.weight} ??? Score: {e.score}</span>
+                <span className="text-purple-400 text-[10px]">Weight: {e.weight} — Score: {e.score}</span>
               </div>
               <p className="text-slate-400 text-[11px] font-sans">{e.detail}</p>
             </div>
@@ -133,21 +133,21 @@ export default function Dashboard() {
               className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold uppercase shadow-md flex items-center gap-1.5"
             >
               <Check className="w-4 h-4" />
-              <span>??? VERIFY INCIDENT</span>
+              <span>✅ VERIFY INCIDENT</span>
             </button>
             <button
               onClick={() => handleVerifyIncident('NEED MORE INFO')}
               className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-extrabold uppercase shadow-md flex items-center gap-1.5"
             >
               <HelpCircle className="w-4 h-4" />
-              <span>?????? NEED MORE INFO</span>
+              <span>❓ NEED MORE INFO</span>
             </button>
             <button
               onClick={() => handleVerifyIncident('REJECTED')}
               className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-extrabold uppercase shadow-md flex items-center gap-1.5"
             >
               <X className="w-4 h-4" />
-              <span>??? REJECT</span>
+              <span>❌ REJECT</span>
             </button>
           </div>
         </div>
@@ -246,7 +246,7 @@ export default function Dashboard() {
                 </div>
                 <p className="text-slate-300 flex items-center gap-1">
                   <MapPin className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>{sos.location} ({sos.lat}, {sos.lng}) ??? <strong className="text-slate-400">{sos.time}</strong></span>
+                  <span>{sos.location} ({sos.lat}, {sos.lng}) — <strong className="text-slate-400">{sos.time}</strong></span>
                 </p>
               </div>
 
@@ -258,12 +258,12 @@ export default function Dashboard() {
                   onChange={(e) => handleUpdateSosStatus(sos.id, e.target.value)}
                   className="bg-slate-900 border border-slate-700 text-cyan-300 font-bold rounded-xl px-3 py-1.5 text-xs focus:outline-none cursor-pointer"
                 >
-                  <option value="NEW">???? NEW</option>
-                  <option value="ACKNOWLEDGED">???? ACKNOWLEDGED</option>
-                  <option value="TEAM ASSIGNED">???? TEAM ASSIGNED</option>
-                  <option value="RESCUE IN PROGRESS">???? RESCUE IN PROGRESS</option>
-                  <option value="RESCUED">???? RESCUED</option>
-                  <option value="CLOSED">??? CLOSED</option>
+                  <option value="NEW">🟡 NEW</option>
+                  <option value="ACKNOWLEDGED">👀 ACKNOWLEDGED</option>
+                  <option value="TEAM ASSIGNED">🚑 TEAM ASSIGNED</option>
+                  <option value="RESCUE IN PROGRESS">🏊 RESCUE IN PROGRESS</option>
+                  <option value="RESCUED">✅ RESCUED</option>
+                  <option value="CLOSED">✔️ CLOSED</option>
                 </select>
               </div>
             </div>
